@@ -65,4 +65,7 @@ This marketplace targets both **native Windows** and **WSL** environments.
 
 | Plugin | Description |
 | ------ | ----------- |
-| `sample` | Starter plugin used as a template. Replace or extend with your own assets. |
+| `dev-tools` | Utilities for daily coding and software development tasks. |
+| `scrum-ops` | Helpers for scrum/agile development and operation workflows. |
+| `obsidian-tools` | Tools for working with Obsidian notes and knowledge management. |
+| `office-tasks` | Assistants for administrative and clerical tasks. |

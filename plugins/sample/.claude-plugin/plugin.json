@@ -1,9 +1,0 @@
-{
-  "name": "sample",
-  "version": "0.1.0",
-  "description": "Starter plugin used as a template for new plugins (sample command, skill, and hook).",
-  "author": {
-    "name": "atman-33",
-    "url": "https://github.com/atman-33"
-  }
-}

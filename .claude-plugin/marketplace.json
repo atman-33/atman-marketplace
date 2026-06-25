@@ -7,9 +7,39 @@
   "description": "Personal Claude Code marketplace collecting reusable plugins (commands, agents, hooks, MCP, skills) for Windows and WSL development environments.",
   "plugins": [
     {
-      "name": "sample",
-      "source": "./plugins/sample",
-      "description": "Starter plugin used as a template for new plugins (sample command, skill, and hook).",
+      "name": "dev-tools",
+      "source": "./plugins/dev-tools",
+      "description": "Utilities for daily coding and software development tasks.",
+      "version": "0.1.0",
+      "author": {
+        "name": "atman-33",
+        "url": "https://github.com/atman-33"
+      }
+    },
+    {
+      "name": "scrum-ops",
+      "source": "./plugins/scrum-ops",
+      "description": "Helpers for scrum/agile development and operation workflows.",
+      "version": "0.1.0",
+      "author": {
+        "name": "atman-33",
+        "url": "https://github.com/atman-33"
+      }
+    },
+    {
+      "name": "obsidian-tools",
+      "source": "./plugins/obsidian-tools",
+      "description": "Tools for working with Obsidian notes and knowledge management.",
+      "version": "0.1.0",
+      "author": {
+        "name": "atman-33",
+        "url": "https://github.com/atman-33"
+      }
+    },
+    {
+      "name": "office-tasks",
+      "source": "./plugins/office-tasks",
+      "description": "Assistants for administrative and clerical tasks.",
       "version": "0.1.0",
       "author": {
         "name": "atman-33",

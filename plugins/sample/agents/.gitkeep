@@ -1,3 +1,0 @@
-# Add sub-agent `.md` files here.
-# Format: front matter with name/description/tools/model, then the system prompt body.
-# See https://docs.claude.com/en/docs/claude-code/sub-agents for the full schema.
