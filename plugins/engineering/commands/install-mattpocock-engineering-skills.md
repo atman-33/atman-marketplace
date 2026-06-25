@@ -1,6 +1,6 @@
 ---
-name: install-mattpocock-skills
-description: Install selected mattpocock engineering skills (improve-codebase-architecture, tdd, to-issues, to-prd, codebase-design) via gh skill install.
+name: install-mattpocock-engineering-skills
+description: Install selected mattpocock engineering skills (improve-codebase-architecture, tdd, to-issues, to-prd, codebase-design, grill-with-docs) via gh skill install.
 disable-model-invocation: true
 allowed-tools: Bash(gh skill install *) Bash(gh auth status)
 ---
@@ -12,6 +12,7 @@ Install the following mattpocock engineering skills for Claude Code:
 - to-issues
 - to-prd
 - codebase-design
+- grill-with-docs
 
 Steps:
 
@@ -24,6 +25,7 @@ gh skill install mattpocock/skills engineering/tdd --agent claude-code
 gh skill install mattpocock/skills engineering/to-issues --agent claude-code
 gh skill install mattpocock/skills engineering/to-prd --agent claude-code
 gh skill install mattpocock/skills engineering/codebase-design --agent claude-code
+gh skill install mattpocock/skills engineering/grill-with-docs --agent claude-code
 ```
 
 3. If any install fails, print the full error, continue with the remaining skills, and report a summary at the end.
