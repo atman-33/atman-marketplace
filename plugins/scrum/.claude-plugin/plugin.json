@@ -1,7 +1,7 @@
 {
-  "name": "office-tasks",
+  "name": "scrum",
   "version": "0.1.0",
-  "description": "Assistants for administrative and clerical tasks.",
+  "description": "Helpers for scrum and agile development workflows.",
   "author": {
     "name": "atman-33",
     "url": "https://github.com/atman-33"

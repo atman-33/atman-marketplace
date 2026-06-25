@@ -1,0 +1,9 @@
+{
+  "name": "productivity",
+  "version": "0.1.0",
+  "description": "Productivity helpers for administrative and daily tasks.",
+  "author": {
+    "name": "atman-33",
+    "url": "https://github.com/atman-33"
+  }
+}

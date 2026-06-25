@@ -7,9 +7,9 @@
   "description": "Personal Claude Code marketplace collecting reusable plugins (commands, agents, hooks, MCP, skills) for Windows and WSL development environments.",
   "plugins": [
     {
-      "name": "dev-tools",
-      "source": "./plugins/dev-tools",
-      "description": "Utilities for daily coding and software development tasks.",
+      "name": "engineering",
+      "source": "./plugins/engineering",
+      "description": "Engineering utilities and helpers for software development tasks.",
       "version": "0.1.0",
       "author": {
         "name": "atman-33",
@@ -17,9 +17,9 @@
       }
     },
     {
-      "name": "scrum-ops",
-      "source": "./plugins/scrum-ops",
-      "description": "Helpers for scrum/agile development and operation workflows.",
+      "name": "scrum",
+      "source": "./plugins/scrum",
+      "description": "Helpers for scrum and agile development workflows.",
       "version": "0.1.0",
       "author": {
         "name": "atman-33",
@@ -27,9 +27,9 @@
       }
     },
     {
-      "name": "obsidian-tools",
-      "source": "./plugins/obsidian-tools",
-      "description": "Tools for working with Obsidian notes and knowledge management.",
+      "name": "obsidian",
+      "source": "./plugins/obsidian",
+      "description": "Helpers for working with Obsidian notes and knowledge management.",
       "version": "0.1.0",
       "author": {
         "name": "atman-33",
@@ -37,9 +37,19 @@
       }
     },
     {
-      "name": "office-tasks",
-      "source": "./plugins/office-tasks",
-      "description": "Assistants for administrative and clerical tasks.",
+      "name": "productivity",
+      "source": "./plugins/productivity",
+      "description": "Productivity helpers for administrative and daily tasks.",
+      "version": "0.1.0",
+      "author": {
+        "name": "atman-33",
+        "url": "https://github.com/atman-33"
+      }
+    },
+    {
+      "name": "misc",
+      "source": "./plugins/misc",
+      "description": "Miscellaneous utility skills for common Claude Code tasks.",
       "version": "0.1.0",
       "author": {
         "name": "atman-33",

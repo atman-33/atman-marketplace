@@ -1,7 +1,7 @@
 {
-  "name": "scrum-ops",
+  "name": "misc",
   "version": "0.1.0",
-  "description": "Helpers for scrum/agile development and operation workflows.",
+  "description": "Miscellaneous utility skills for common Claude Code tasks.",
   "author": {
     "name": "atman-33",
     "url": "https://github.com/atman-33"

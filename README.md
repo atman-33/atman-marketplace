@@ -65,7 +65,8 @@ This marketplace targets both **native Windows** and **WSL** environments.
 
 | Plugin | Description |
 | ------ | ----------- |
-| `dev-tools` | Utilities for daily coding and software development tasks. |
-| `scrum-ops` | Helpers for scrum/agile development and operation workflows. |
-| `obsidian-tools` | Tools for working with Obsidian notes and knowledge management. |
-| `office-tasks` | Assistants for administrative and clerical tasks. |
+| `engineering` | Engineering utilities and helpers for software development tasks. |
+| `scrum` | Helpers for scrum and agile development workflows. |
+| `obsidian` | Helpers for working with Obsidian notes and knowledge management. |
+| `productivity` | Productivity helpers for administrative and daily tasks. |
+| `misc` | Miscellaneous utility skills for common Claude Code tasks. |
