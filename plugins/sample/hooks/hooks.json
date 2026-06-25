@@ -1,0 +1,22 @@
+{
+  "Stop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "powershell -NoProfile -Command [console]::beep(800,200)"
+        }
+      ]
+    }
+  ],
+  "Notification": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "powershell -NoProfile -Command [console]::beep(600,150)"
+        }
+      ]
+    }
+  ]
+}

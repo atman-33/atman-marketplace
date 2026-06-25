@@ -1,0 +1,20 @@
+{
+  "name": "atman-marketplace",
+  "owner": {
+    "name": "atman-33",
+    "url": "https://github.com/atman-33/atman-marketplace"
+  },
+  "description": "Personal Claude Code marketplace collecting reusable plugins (commands, agents, hooks, MCP, skills) for Windows and WSL development environments.",
+  "plugins": [
+    {
+      "name": "sample",
+      "source": "./plugins/sample",
+      "description": "Starter plugin used as a template for new plugins (sample command, skill, and hook).",
+      "version": "0.1.0",
+      "author": {
+        "name": "atman-33",
+        "url": "https://github.com/atman-33"
+      }
+    }
+  ]
+}
