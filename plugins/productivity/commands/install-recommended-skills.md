@@ -1,11 +1,11 @@
 ---
-name: install-mattpocock-productivity-skills
-description: Install selected mattpocock productivity skills (grill-me, handoff, writing-great-skills) via gh skill install.
+name: install-recommended-skills
+description: Install recommended productivity skills (grill-me, handoff, writing-great-skills) via gh skill install.
 disable-model-invocation: true
 allowed-tools: Bash(gh skill install *) Bash(gh auth status)
 ---
 
-Install the following mattpocock productivity skills for Claude Code:
+Install the following recommended productivity skills for Claude Code:
 
 - grill-me
 - handoff

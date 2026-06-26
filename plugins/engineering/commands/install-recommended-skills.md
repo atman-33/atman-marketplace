@@ -1,11 +1,11 @@
 ---
-name: install-mattpocock-engineering-skills
-description: Install selected mattpocock engineering skills (improve-codebase-architecture, tdd, to-issues, to-prd, codebase-design, grill-with-docs) via gh skill install.
+name: install-recommended-skills
+description: Install recommended engineering skills (improve-codebase-architecture, tdd, to-issues, to-prd, codebase-design, grill-with-docs) via gh skill install.
 disable-model-invocation: true
 allowed-tools: Bash(gh skill install *) Bash(gh auth status)
 ---
 
-Install the following mattpocock engineering skills for Claude Code:
+Install the following recommended engineering skills for Claude Code:
 
 - improve-codebase-architecture
 - tdd
