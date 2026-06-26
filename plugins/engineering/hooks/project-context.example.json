@@ -1,0 +1,14 @@
+{
+  "openspecPath": "C:/repos/atman-marketplace/openspec",
+  "projects": [
+    {
+      "name": "atman-marketplace",
+      "path": "C:/repos/atman-marketplace",
+      "summary": "Claude Code plugin marketplace"
+    },
+    {
+      "name": "agent-harness",
+      "path": "C:/repos/agent-harness"
+    }
+  ]
+}
