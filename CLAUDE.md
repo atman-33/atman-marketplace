@@ -62,7 +62,7 @@ Use `$ARGUMENTS` for the full argument string, `$1`/`$2`/… for positional args
 | Plugin | Contents |
 |--------|----------|
 | `engineering` | Skills: `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`. Command: `install-recommended-skills` (installs mattpocock/skills engineering set via `gh skill install`) |
-| `productivity` | Skills: `install-skill`, `claude-code-commands`. Command: `install-recommended-skills` (installs mattpocock/skills productivity set) |
+| `productivity` | Skills: `install-skill`, `create-claude-command`. Command: `install-recommended-skills` (installs mattpocock/skills productivity set) |
 | `scrum` | Placeholder — MCP config only, no commands/skills yet |
 | `obsidian` | Placeholder — MCP config only, no commands/skills yet |
 | `stack-cloudflare` | Skill: `cloudflare-static-assets` (static asset utility pattern for React Router on Cloudflare Workers) |
