@@ -47,16 +47,6 @@
       }
     },
     {
-      "name": "misc",
-      "source": "./plugins/misc",
-      "description": "Miscellaneous utility skills for common Claude Code tasks.",
-      "version": "0.1.0",
-      "author": {
-        "name": "atman-33",
-        "url": "https://github.com/atman-33"
-      }
-    },
-    {
       "name": "stack-cloudflare",
       "source": "./plugins/stack-cloudflare",
       "description": "Helpers for developing on Cloudflare (Workers, Pages, R2, D1, etc.).",

@@ -106,7 +106,6 @@ This marketplace targets both **native Windows** and **WSL** environments.
 | `scrum` | Helpers for scrum and agile development workflows. |
 | `obsidian` | Helpers for working with Obsidian notes and knowledge management. |
 | `productivity` | Productivity helpers for administrative and daily tasks. |
-| `misc` | Miscellaneous utility skills for common Claude Code tasks. |
 | `stack-cloudflare` | Helpers for developing on Cloudflare (Workers, Pages, R2, D1, etc.). |
 | `stack-dnd-kit` | Helpers for building drag-and-drop UIs with dnd kit. |
 | `stack-opencode` | Helpers for working with OpenCode configuration and extensions. |
