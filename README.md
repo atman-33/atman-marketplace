@@ -10,8 +10,6 @@ that can be installed into Claude Code via the `/plugin` command.
 2. Select **Marketplaces** → **Add Marketplace**.
 3. Enter the source: `atman-33/atman-marketplace`
 4. Select **atman-marketplace**, then **Browse plugins**.
-5. Pick the plugin you want and choose **Install for you (user scope)** so it
-   applies to every project on your machine.
 
 Alternative source formats are also supported:
 
@@ -21,6 +19,45 @@ git@github.com:atman-33/atman-marketplace.git      (SSH)
 https://github.com/atman-33/atman-marketplace.git  (HTTPS)
 ./path/to/atman-marketplace                        (local clone)
 ```
+
+## Installing a plugin
+
+After the marketplace is added, install any plugin with `/plugin`.
+
+### Interactive UI
+
+1. Run `/plugin`.
+2. Browse to the plugin you want under **atman-marketplace**.
+3. Press **Enter** on the plugin and choose a scope in the install dialog.
+
+### Command line
+
+Use `/plugin install <plugin-name>` with a `--scope` flag to choose where the
+plugin is saved:
+
+```
+/plugin install engineering --scope user
+/plugin install engineering --scope project
+/plugin install engineering --scope local
+```
+
+### Installation scopes
+
+| Scope | Saved To | Shared with Team |
+|---|---|---|
+| **user** | User settings (global) | No (personal only) |
+| **project** | `.claude/settings.json` (in repo) | Yes (committed to git) |
+| **local** | `.claude/settings.local.json` (in repo) | No (gitignored) |
+
+- **user** — Makes the plugin available across every project on your machine.
+- **project** — Saves the plugin in the current repository so the whole team
+  can use it. Use this for project-specific tooling.
+- **local** — Applies the plugin only to the current repository on your
+  machine, without sharing it through git. Use this for personal experiments
+  or overrides.
+
+If you do not specify a scope, Claude Code installs the plugin in **user**
+scope by default.
 
 ## Repository layout
 
@@ -70,3 +107,7 @@ This marketplace targets both **native Windows** and **WSL** environments.
 | `obsidian` | Helpers for working with Obsidian notes and knowledge management. |
 | `productivity` | Productivity helpers for administrative and daily tasks. |
 | `misc` | Miscellaneous utility skills for common Claude Code tasks. |
+| `stack-cloudflare` | Helpers for developing on Cloudflare (Workers, Pages, R2, D1, etc.). |
+| `stack-dnd-kit` | Helpers for building drag-and-drop UIs with dnd kit. |
+| `stack-opencode` | Helpers for working with OpenCode configuration and extensions. |
+| `stack-react-router` | Helpers for React Router and Remix applications. |
