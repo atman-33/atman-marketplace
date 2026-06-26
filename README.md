@@ -6,39 +6,55 @@ that can be installed into Claude Code via the `/plugin` command.
 
 ## Adding this marketplace to Claude Code
 
+### CLI
+
+```bash
+claude plugin marketplace add atman-33/atman-marketplace
+```
+
+Alternative source formats are also supported:
+
+```bash
+claude plugin marketplace add atman-33/atman-marketplace                         # GitHub shorthand
+claude plugin marketplace add git@github.com:atman-33/atman-marketplace.git      # SSH
+claude plugin marketplace add https://github.com/atman-33/atman-marketplace.git  # HTTPS
+claude plugin marketplace add ./path/to/atman-marketplace                        # local clone
+```
+
+### Interactive UI
+
 1. Open Claude Code and run `/plugin`.
 2. Select **Marketplaces** → **Add Marketplace**.
 3. Enter the source: `atman-33/atman-marketplace`
 4. Select **atman-marketplace**, then **Browse plugins**.
 
-Alternative source formats are also supported:
-
-```
-atman-33/atman-marketplace                         (GitHub shorthand)
-git@github.com:atman-33/atman-marketplace.git      (SSH)
-https://github.com/atman-33/atman-marketplace.git  (HTTPS)
-./path/to/atman-marketplace                        (local clone)
-```
-
 ## Installing a plugin
 
-After the marketplace is added, install any plugin with `/plugin`.
+### CLI
+
+```bash
+claude plugin install <plugin-name>@atman-marketplace [--scope user|project|local]
+```
+
+Scope defaults to `user` when omitted.
+
+```bash
+# Other useful commands
+claude plugin list
+claude plugin update <plugin-name>@atman-marketplace
+claude plugin uninstall <plugin-name>@atman-marketplace
+```
 
 ### Interactive UI
 
-1. Run `/plugin`.
+1. Run `/plugin` inside a Claude Code session.
 2. Browse to the plugin you want under **atman-marketplace**.
 3. Press **Enter** on the plugin and choose a scope in the install dialog.
 
-### Command line
-
-Use `/plugin install <plugin-name>` with a `--scope` flag to choose where the
-plugin is saved:
+Or use the slash command form:
 
 ```
-/plugin install engineering --scope user
-/plugin install engineering --scope project
-/plugin install engineering --scope local
+/plugin install <plugin-name> --scope user|project|local
 ```
 
 ### Installation scopes
@@ -56,8 +72,19 @@ plugin is saved:
   machine, without sharing it through git. Use this for personal experiments
   or overrides.
 
-If you do not specify a scope, Claude Code installs the plugin in **user**
-scope by default.
+### Recommended installation
+
+The table below shows the recommended scope for each plugin and the one-line install command.
+
+| Plugin | Recommended Scope | Install command |
+|--------|-------------------|-----------------|
+| `productivity` | `user` | `claude plugin install productivity@atman-marketplace --scope user` |
+| `engineering` | `project` | `claude plugin install engineering@atman-marketplace --scope project` |
+| `obsidian` | `project` | `claude plugin install obsidian@atman-marketplace --scope project` |
+
+- **productivity** → `user`: Personal productivity tools that are useful across all projects.
+- **engineering** → `project`: Dev tooling that includes project-specific configuration and is shared with the team via git.
+- **obsidian** → `project`: Tied to a specific repository's note-taking setup.
 
 ## Repository layout
 
@@ -100,13 +127,13 @@ This marketplace targets both **native Windows** and **WSL** environments.
 
 ## Available plugins
 
-| Plugin | Description |
-| ------ | ----------- |
-| `engineering` | Engineering utilities and helpers for software development tasks. |
-| `scrum` | Helpers for scrum and agile development workflows. |
-| `obsidian` | Helpers for working with Obsidian notes and knowledge management. |
-| `productivity` | Productivity helpers for administrative and daily tasks. |
-| `stack-cloudflare` | Helpers for developing on Cloudflare (Workers, Pages, R2, D1, etc.). |
-| `stack-dnd-kit` | Helpers for building drag-and-drop UIs with dnd kit. |
-| `stack-opencode` | Helpers for working with OpenCode configuration and extensions. |
-| `stack-react-router` | Helpers for React Router and Remix applications. |
+| Plugin | Description | Recommended Scope |
+| ------ | ----------- | ----------------- |
+| `engineering` | Engineering utilities and helpers for software development tasks. | `project` |
+| `scrum` | Helpers for scrum and agile development workflows. | — |
+| `obsidian` | Helpers for working with Obsidian notes and knowledge management. | `project` |
+| `productivity` | Productivity helpers for administrative and daily tasks. | `user` |
+| `stack-cloudflare` | Helpers for developing on Cloudflare (Workers, Pages, R2, D1, etc.). | — |
+| `stack-dnd-kit` | Helpers for building drag-and-drop UIs with dnd kit. | — |
+| `stack-opencode` | Helpers for working with OpenCode configuration and extensions. | — |
+| `stack-react-router` | Helpers for React Router and Remix applications. | — |
