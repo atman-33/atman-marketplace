@@ -49,10 +49,18 @@ function xmlEscape(value) {
     .replace(/"/g, "&quot;");
 }
 
-/** Print a SessionStart hook result and exit 0. */
+/**
+ * Print a SessionStart hook result and exit 0.
+ *
+ * When there is content to inject, the same text is also surfaced to the user
+ * via the top-level `systemMessage` field (verbatim), so it is visible in the
+ * transcript and the user can confirm exactly what was injected. `systemMessage`
+ * is display-only; `additionalContext` is what Claude actually receives.
+ */
 function emit(additionalContext) {
   const payload = additionalContext
     ? {
+        systemMessage: additionalContext,
         hookSpecificOutput: {
           hookEventName: "SessionStart",
           additionalContext,

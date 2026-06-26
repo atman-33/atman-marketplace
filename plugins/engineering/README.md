@@ -83,6 +83,10 @@ no platform-specific wrapper. It reads a per-project config file and is silent
 (injects nothing) when that file is absent — it never nags an unconfigured
 project.
 
+Whenever it does inject context, the exact injected block is also shown to you as
+a `systemMessage` in the transcript, so you can confirm the intended context was
+injected. (A missing config still shows nothing.)
+
 #### Configuration
 
 Create `.claude/project-context.json` in the project root (run
