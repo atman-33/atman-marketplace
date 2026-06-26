@@ -1,4 +1,5 @@
 {
+  "roleBasedDelegation": true,
   "openspecPath": "C:/repos/atman-marketplace/openspec",
   "projects": [
     {

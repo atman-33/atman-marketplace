@@ -61,7 +61,7 @@ Use `$ARGUMENTS` for the full argument string, `$1`/`$2`/… for positional args
 
 | Plugin | Contents |
 |--------|----------|
-| `engineering` | Skills: `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`. Commands: `install-recommended-skills` (installs mattpocock/skills engineering set via `gh skill install`), `setup-openspec`, `setup-project-context` (scaffolds `.claude/project-context.json`). Hook: `SessionStart` injects a `<project-context>` block (registered project paths + openspec docs folder) read from `.claude/project-context.json`; Node-based, Windows/WSL compatible |
+| `engineering` | Skills: `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`. Sub-agents: `code-explore` (sonnet), `implementer` (sonnet), `heavy-implementer` (opus), `test-runner` (haiku) — role-based, model-fixed in frontmatter. Commands: `install-recommended-skills` (installs mattpocock/skills engineering set via `gh skill install`), `setup-openspec`, `setup-project-context` (scaffolds `.claude/project-context.json`). Hook: `SessionStart` injects a `<project-context>` block (registered project paths + openspec docs folder) and, when `roleBasedDelegation: true`, a `<role-based-delegation>` block (when/whom to delegate, from `hooks/role-based-model-selection.md`) read from `.claude/project-context.json`; Node-based, Windows/WSL compatible |
 | `productivity` | Skills: `install-skill`, `create-claude-command`. Command: `install-recommended-skills` (installs mattpocock/skills productivity set) |
 | `scrum` | Placeholder — MCP config only, no commands/skills yet |
 | `obsidian` | Placeholder — MCP config only, no commands/skills yet |

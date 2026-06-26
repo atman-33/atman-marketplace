@@ -8,6 +8,22 @@ Engineering utilities and helpers for software development tasks.
 
 - `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`
 
+### Sub-agents
+
+Role-based sub-agents (see `agents/`) so each kind of work runs in its own
+context on a model matched to its cost and difficulty. Models are fixed in each
+agent's frontmatter:
+
+| Agent | Model | Role |
+|-------|-------|------|
+| `code-explore` | sonnet | Broad, read-only code investigation / reference tracing |
+| `implementer` | sonnet | Implement settled, mostly-mechanical changes |
+| `heavy-implementer` | opus | Large / multi-file implementation or debugging |
+| `test-runner` | haiku | Run tests/build/lint and summarize the result |
+
+The main session decides when to delegate. To make those criteria available to
+Claude automatically, enable delegation-criteria injection (below).
+
 ### Commands
 
 - `/install-recommended-skills` — install the mattpocock/skills engineering set.
@@ -47,9 +63,11 @@ Create `.claude/project-context.json` in the project root (run
 }
 ```
 
-- `openspecPath` and `projects` are both optional. Omit either and the hook skips
-  that section; a missing file injects nothing.
+- `roleBasedDelegation`, `openspecPath`, and `projects` are all optional. Omit
+  any and the hook skips that part; a missing file injects nothing.
 - `name` defaults to `path` when omitted; `summary` is optional.
+- `roleBasedDelegation: true` injects the role-based delegation criteria (see
+  below).
 
 This produces:
 
@@ -64,6 +82,22 @@ This produces:
   </registered-projects>
 </project-context>
 ```
+
+#### Role-based delegation criteria injection
+
+Setting `"roleBasedDelegation": true` in `.claude/project-context.json` makes the
+same SessionStart hook also inject a `<role-based-delegation>` block describing
+**when to delegate and which sub-agent to use** (the `code-explore`,
+`implementer`, `heavy-implementer`, and `test-runner` agents above). This is the
+plugin-friendly equivalent of importing a delegation-criteria doc into your
+`CLAUDE.md`: the criteria are loaded at session start without you having to edit
+`CLAUDE.md`.
+
+The criteria text lives in [`hooks/role-based-model-selection.md`](hooks/role-based-model-selection.md)
+and is injected verbatim. The flag is opt-in, so sessions stay lean unless you
+ask for it — consistent with the hook's "never nag an unconfigured project"
+behavior. Enable it where you actually run multi-step development work (e.g. at
+`user` scope, or per repo).
 
 #### How install scope relates to the config
 

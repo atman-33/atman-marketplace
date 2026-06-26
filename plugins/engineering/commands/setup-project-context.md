@@ -1,6 +1,6 @@
 ---
 name: setup-project-context
-description: Scaffold or show the .claude/project-context.json file that the SessionStart hook reads to inject registered project paths and the openspec docs folder into context.
+description: Scaffold or show the .claude/project-context.json file that the SessionStart hook reads to inject registered project paths, the openspec docs folder, and (optionally) the role-based delegation criteria into context.
 disable-model-invocation: true
 allowed-tools: Read Write
 ---
@@ -22,6 +22,7 @@ Steps:
 
    ```json
    {
+     "roleBasedDelegation": true,
      "openspecPath": "<absolute path to the openspec docs folder>",
      "projects": [
        {
@@ -34,8 +35,12 @@ Steps:
    ```
 
 3. Report what was done and remind the user:
-   - `openspecPath` and `projects` are both optional; omit either and the hook
-     skips that part. A missing file injects nothing.
+   - `roleBasedDelegation`, `openspecPath`, and `projects` are all optional; omit
+     any of them and the hook skips that part. A missing file injects nothing.
+   - Set `roleBasedDelegation` to `true` to inject the engineering plugin's
+     role-based delegation criteria (when/whom to delegate to the `code-explore`,
+     `implementer`, `heavy-implementer`, and `test-runner` sub-agents) at session
+     start. Leave it out to keep sessions lean.
    - Use absolute paths for the current environment. Windows and WSL use
      different path forms (`C:/repos/...` vs `/mnt/c/repos/...`), so if you run
      Claude Code in both on the same repo, the values must match the environment

@@ -2,7 +2,9 @@
 // @ts-check
 /**
  * SessionStart hook: inject registered project paths and the openspec docs
- * folder path into Claude's context as a <project-context> XML block.
+ * folder path into Claude's context as a <project-context> XML block, and
+ * optionally the role-based delegation criteria as a <role-based-delegation>
+ * block (when `roleBasedDelegation: true` is set in the config).
  *
  * Reads `<project-root>/.claude/project-context.json` and emits
  * `hookSpecificOutput.additionalContext`. Runs identically on Windows and
@@ -11,14 +13,23 @@
  * Behaviour:
  *   - No config file        -> emit nothing (don't nag unconfigured projects).
  *   - Malformed config       -> emit a short error note so the user can fix it.
- *   - Valid config           -> emit the <project-context> block.
+ *   - Valid config           -> emit the <project-context> block and/or the
+ *                               <role-based-delegation> block, as configured.
  * Always exits 0 (SessionStart cannot block and hooks must be failure-tolerant).
  */
 
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const CONFIG_RELATIVE_PATH = ".claude/project-context.json";
+
+// Delegation-criteria doc shipped alongside the hook (../role-based-model-selection.md).
+const DELEGATION_DOC_PATH = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "role-based-model-selection.md"
+);
 
 /** Read all of stdin (the SessionStart payload). Returns "" if none. */
 function readStdin() {
@@ -110,6 +121,24 @@ function buildXml(config) {
   return lines.join("\n");
 }
 
+/**
+ * Read the shipped delegation-criteria doc and wrap it in a
+ * <role-based-delegation> block. Returns null (and injects nothing) if the file
+ * can't be read, since the hook must be failure-tolerant.
+ */
+function buildDelegationBlock() {
+  let doc;
+  try {
+    doc = readFileSync(DELEGATION_DOC_PATH, "utf8").trim();
+  } catch {
+    return null;
+  }
+  if (!doc) {
+    return null;
+  }
+  return `<role-based-delegation>\n${doc}\n</role-based-delegation>`;
+}
+
 function main() {
   const stdinRaw = readStdin();
   const projectRoot = resolveProjectRoot(stdinRaw);
@@ -142,12 +171,24 @@ function main() {
   const hasProjects =
     Array.isArray(config.projects) &&
     config.projects.some((p) => p && typeof p.path === "string" && p.path.trim());
-  if (!hasOpenspec && !hasProjects) {
+  const wantsDelegation = config.roleBasedDelegation === true;
+  if (!hasOpenspec && !hasProjects && !wantsDelegation) {
     emit(null);
     return;
   }
 
-  emit(buildXml(config));
+  const blocks = [];
+  if (hasOpenspec || hasProjects) {
+    blocks.push(buildXml(config));
+  }
+  if (wantsDelegation) {
+    const delegation = buildDelegationBlock();
+    if (delegation) {
+      blocks.push(delegation);
+    }
+  }
+
+  emit(blocks.length > 0 ? blocks.join("\n\n") : null);
 }
 
 main();
