@@ -29,6 +29,7 @@ Claude automatically, enable delegation-criteria injection (below).
 - `/install-recommended-skills` — install the mattpocock/skills engineering set.
 - `/setup-openspec` — install the OpenSpec CLI and run `openspec init --tools claude`.
 - `/setup-project-context` — scaffold or show `.claude/project-context.json` (see below).
+- `/set-openspec-path` — switch `openspecPath` by picking a registered project from a menu (see below).
 
 ### MCP servers
 
@@ -109,6 +110,11 @@ Create `.claude/project-context.json` in the project root (run
 
 - `roleBasedDelegation`, `openspecPath`, and `projects` are all optional. Omit
   any and the hook skips that part; a missing file injects nothing.
+- `openspecPath` falls back to `<project-root>/openspec` when it is empty **or**
+  points at a folder that does not exist, so switching projects rarely needs a
+  manual path edit. If neither path exists, the `<openspec>` line is omitted.
+  Use `/set-openspec-path` to switch it by picking a registered project from a
+  menu instead of hand-editing the absolute path.
 - `name` defaults to `path` when omitted; `summary` is optional.
 - `roleBasedDelegation: true` injects the role-based delegation criteria (see
   below).

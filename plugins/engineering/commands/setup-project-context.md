@@ -37,6 +37,10 @@ Steps:
 3. Report what was done and remind the user:
    - `roleBasedDelegation`, `openspecPath`, and `projects` are all optional; omit
      any of them and the hook skips that part. A missing file injects nothing.
+   - `openspecPath` may be left empty (or pointed at a missing folder); the hook
+     then auto-resolves it to the working-directory `openspec`
+     (`<project-root>/openspec`). Use `/set-openspec-path` to switch it later by
+     picking a registered project from a menu.
    - Set `roleBasedDelegation` to `true` to inject the engineering plugin's
      role-based delegation criteria (when/whom to delegate to the `code-explore`,
      `implementer`, `heavy-implementer`, and `test-runner` sub-agents) at session

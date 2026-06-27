@@ -27,6 +27,7 @@ plugins/<plugin-name>/
 
 - `marketplace.json` → `plugins[].name` must exactly match the plugin folder name and `plugin.json` → `name`.
 - When adding a new plugin, register it in both `.claude-plugin/marketplace.json` and create `plugins/<name>/.claude-plugin/plugin.json`.
+- **Always bump the plugin's `version` in `plugins/<name>/.claude-plugin/plugin.json` whenever you change that plugin** (commands, agents, hooks, MCP config, skills, or docs). Use semver: patch for fixes/docs, minor for new features, major for breaking changes. This is required for users to receive the update.
 
 ## Skill authoring
 
@@ -61,7 +62,7 @@ Use `$ARGUMENTS` for the full argument string, `$1`/`$2`/… for positional args
 
 | Plugin | Contents |
 |--------|----------|
-| `engineering` | Skills: `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`. Sub-agents: `code-explore` (sonnet), `implementer` (sonnet), `heavy-implementer` (opus), `test-runner` (haiku) — role-based, model-fixed in frontmatter. Commands: `install-recommended-skills` (installs mattpocock/skills engineering set via `gh skill install`), `setup-openspec`, `setup-project-context` (scaffolds `.claude/project-context.json`). Hook: `SessionStart` injects a `<project-context>` block (registered project paths + openspec docs folder) and, when `roleBasedDelegation: true`, a `<role-based-delegation>` block (when/whom to delegate, from `hooks/role-based-model-selection.md`) read from `.claude/project-context.json`; Node-based, Windows/WSL compatible. MCP: `.mcp.json` registers `serena` (code toolkit via `uvx`) and `context7` (library docs), each started by a Node launcher under `mcp/` that branches on `process.platform` so one config works on Windows and WSL |
+| `engineering` | Skills: `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`. Sub-agents: `code-explore` (sonnet), `implementer` (sonnet), `heavy-implementer` (opus), `test-runner` (haiku) — role-based, model-fixed in frontmatter. Commands: `install-recommended-skills` (installs mattpocock/skills engineering set via `gh skill install`), `setup-openspec`, `setup-project-context` (scaffolds `.claude/project-context.json`), `set-openspec-path` (switches `openspecPath` by picking a registered project from a menu). Hook: `SessionStart` injects a `<project-context>` block (registered project paths + openspec docs folder, falling back to `<project-root>/openspec` when `openspecPath` is empty or missing) and, when `roleBasedDelegation: true`, a `<role-based-delegation>` block (when/whom to delegate, from `hooks/role-based-model-selection.md`) read from `.claude/project-context.json`; Node-based, Windows/WSL compatible. MCP: `.mcp.json` registers `serena` (code toolkit via `uvx`) and `context7` (library docs), each started by a Node launcher under `mcp/` that branches on `process.platform` so one config works on Windows and WSL |
 | `productivity` | Skills: `install-skill`, `create-claude-command`. Command: `install-recommended-skills` (installs mattpocock/skills productivity set) |
 | `scrum` | Placeholder — MCP config only, no commands/skills yet |
 | `obsidian` | Skills: `defuddle`, `json-canvas`, `kb-index`, `kb-ingest`, `kb-init`, `kb-lint`, `kb-query`, `obsidian-bases`, `obsidian-cli`, `obsidian-markdown`, `zenn-blog-writing`, `zenn-markdown` |

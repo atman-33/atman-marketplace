@@ -18,7 +18,7 @@
  * Always exits 0 (SessionStart cannot block and hooks must be failure-tolerant).
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -89,12 +89,32 @@ function resolveProjectRoot(stdinRaw) {
   return process.cwd();
 }
 
+/**
+ * Resolve the openspec docs folder to inject.
+ *
+ * Priority:
+ *   1. `config.openspecPath` when it is set and the folder exists on disk.
+ *   2. Otherwise `<projectRoot>/openspec` (the working directory's openspec),
+ *      so switching projects rarely requires editing the path by hand.
+ * Returns "" when neither exists, so the <openspec> line is simply omitted.
+ */
+function resolveOpenspecPath(config, projectRoot) {
+  const candidate =
+    typeof config.openspecPath === "string" ? config.openspecPath.trim() : "";
+  if (candidate && existsSync(candidate)) {
+    return candidate;
+  }
+  const fallback =
+    projectRoot.replace(/\\/g, "/").replace(/\/+$/, "") + "/openspec";
+  return existsSync(fallback) ? fallback : "";
+}
+
 /** Build the <project-context> XML block from the parsed config. */
-function buildXml(config) {
+function buildXml(config, openspecPath) {
   const lines = ["<project-context>"];
 
-  if (typeof config.openspecPath === "string" && config.openspecPath.trim()) {
-    lines.push(`  <openspec path="${xmlEscape(config.openspecPath.trim())}" />`);
+  if (openspecPath) {
+    lines.push(`  <openspec path="${xmlEscape(openspecPath)}" />`);
   }
 
   const projects = Array.isArray(config.projects) ? config.projects : [];
@@ -174,8 +194,8 @@ function main() {
   }
 
   // Nothing useful configured -> inject nothing.
-  const hasOpenspec =
-    typeof config.openspecPath === "string" && config.openspecPath.trim();
+  const resolvedOpenspec = resolveOpenspecPath(config, projectRoot);
+  const hasOpenspec = resolvedOpenspec !== "";
   const hasProjects =
     Array.isArray(config.projects) &&
     config.projects.some((p) => p && typeof p.path === "string" && p.path.trim());
@@ -187,7 +207,7 @@ function main() {
 
   const blocks = [];
   if (hasOpenspec || hasProjects) {
-    blocks.push(buildXml(config));
+    blocks.push(buildXml(config, resolvedOpenspec));
   }
   if (wantsDelegation) {
     const delegation = buildDelegationBlock();
