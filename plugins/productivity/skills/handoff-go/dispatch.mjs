@@ -122,7 +122,17 @@ function main() {
     console.error('Error: --doc <absolute path> is required');
     process.exit(2);
   }
-  const cwd = args.cwd || process.cwd();
+  const cwd = args.cwd ?? (() => {
+    const fallback = process.cwd();
+    if (fallback.includes('.claude') && fallback.includes('plugins')) {
+      console.warn(
+        'Warning: --cwd was not supplied and the current directory looks like a plugin cache path.\n' +
+        `  cwd: ${fallback}\n` +
+        '  Pass --cwd <project-dir> to set the correct working directory for the next agent.'
+      );
+    }
+    return fallback;
+  })();
   const prompt = buildPrompt(args);
 
   // A: inside zellij

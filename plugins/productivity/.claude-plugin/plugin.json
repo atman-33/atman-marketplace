@@ -1,6 +1,6 @@
 {
   "name": "productivity",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Productivity helpers for administrative and daily tasks. Install at user scope to make it available across all projects.",
   "author": {
     "name": "atman-33",

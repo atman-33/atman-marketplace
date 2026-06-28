@@ -22,13 +22,16 @@ Done when: the document is saved, its absolute path is captured, secrets are red
 
 ## Step 2 — Dispatch
 
-Run the dispatcher from the skill directory:
+Run the dispatcher using its **absolute path** — do NOT `cd` into the skill directory first. Always pass `--cwd` set to the **current session working directory** (the project root, not the skill directory):
 
 ```
-node dispatch.mjs --doc "<absolute doc path>" --instructions "<the user's supplementary instructions from the arguments>"
+node "<absolute path to dispatch.mjs>" --doc "<absolute doc path>" --instructions "<the user's supplementary instructions from the arguments>" --cwd "<current session working directory>"
 ```
 
-Options: `--cwd <dir>` (working directory for the next agent; defaults to the current directory), `--layout pane|tab` (default `pane`), `--dry-run` (print what would run without launching).
+The dispatcher script is located inside the installed skill directory. Construct its absolute path from the known plugin cache location, e.g.:
+`C:\Users\<user>\.claude\plugins\cache\atman-marketplace\productivity\<version>\skills\handoff-go\dispatch.mjs`
+
+Options: `--cwd <dir>` (**required** — set to the current working directory of this session), `--layout pane|tab` (default `pane`), `--dry-run` (print what would run without launching).
 
 The script detects the mode, composes the initial prompt, and launches with fallback:
 
@@ -38,7 +41,7 @@ The script detects the mode, composes the initial prompt, and launches with fall
 | **B — new window** | not in zellij, but `zellij` + a terminal launcher exist | Open a new terminal window hosting zellij + `claude` |
 | **C — manual** | otherwise | Print a paste-ready `claude` command + the document path |
 
-Done when: the script exits and reports the mode it used (A/B/C).
+Done when: the script exits, reports the mode it used (A/B/C), and `--cwd` pointed to the correct project directory (not the skill's directory).
 
 ## Step 3 — Report the result
 
