@@ -4,51 +4,78 @@ description: Configure PowerShell, WSL bash, and WSL zsh profiles to automatical
 allowed-tools: PowerShell Bash Read Write Edit
 ---
 
-## タスク
+## Task
 
-PowerShell および WSL 環境 (bash / zsh) の起動時に Zellij ターミナルマルチプレクサを
-自動起動するよう、各シェルのプロファイルを設定します。
+Configure each shell profile to automatically launch Zellij terminal multiplexer on startup
+for PowerShell and WSL environments (bash / zsh).
 
-## ステップ
+## Steps
 
-### 1. Zellij のインストール確認（環境別）
+### 1. Check Zellij installation (per environment)
 
-**PowerShell 側:**
-`Get-Command zellij -ErrorAction SilentlyContinue` を実行し、Zellij が見つからなければ
-警告のみ表示してスキップ（他の環境の設定は続行）。
+**PowerShell:**
+Run `Get-Command zellij -ErrorAction SilentlyContinue`. If not found, show a warning and skip
+(continue setting up the other environments).
 
-**WSL 側:**
-`wsl -- which zellij` を実行し、見つからなければ警告のみ表示してスキップ。
+**WSL:**
+Run `wsl -- which zellij`. If not found, show a warning and skip.
 
-インストール方法の案内:
-- Windows (PowerShell): `winget install zellij` または `cargo install zellij`
-- WSL: `cargo install zellij` または公式サイト (https://zellij.dev) 参照
+Installation guidance:
+- Windows (PowerShell): `winget install zellij` or `cargo install zellij`
+- WSL: `cargo install zellij` or see the official site (https://zellij.dev)
 
 ---
 
-### 2. PowerShell プロファイルの設定
+### 2. Configure PowerShell profiles
 
-1. PowerShell で `$PROFILE` のパスを取得する。
-2. ファイルが存在しない場合は、親ディレクトリごと新規作成する。
-3. Read でファイルを読み込み、`ZELLIJ` または `Auto-start Zellij` が含まれていれば
-   「設定済み」として追加をスキップする。
-4. 含まれていなければ末尾に以下を追記する：
+Process the following **two profiles** independently.
+
+#### 2-A. PowerShell 7 profile
+
+1. Get the profile path from `$PROFILE`.
+2. If the file does not exist, create it along with its parent directory.
+3. Read the file and check whether it contains `ZELLIJ` or `Auto-start Zellij`.
+   If found, mark as "already configured" and skip.
+4. If not found, append the following at the end of the file:
 
    ```powershell
    # Auto-start Zellij
    if (-not $env:ZELLIJ) {
-       zellij
+       zellij options --default-shell powershell
    }
    ```
 
+#### 2-B. Windows PowerShell profile
+
+1. Build the profile path without hardcoding the username:
+
+   ```powershell
+   $winPSProfile = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+   ```
+
+2. If the parent directory (`WindowsPowerShell\`) does not exist, create it with `New-Item -ItemType Directory -Force`.
+3. If the file does not exist, create it.
+4. Read the file and check whether it contains `ZELLIJ` or `Auto-start Zellij`.
+   If found, mark as "already configured" and skip.
+5. If not found, append the following at the end of the file:
+
+   ```powershell
+   # Auto-start Zellij
+   if (-not $env:ZELLIJ) {
+       zellij options --default-shell powershell
+   }
+   ```
+
+> Note: On systems where OneDrive redirects the Documents folder, `GetFolderPath("MyDocuments")` returns the OneDrive path. This is expected and correct.
+
 ---
 
-### 3. WSL bash プロファイルの設定
+### 3. Configure WSL bash profile
 
-1. `wsl -- test -f ~/.bashrc && echo exists` で `~/.bashrc` の存在を確認する。
-2. `wsl -- grep -q "ZELLIJ" ~/.bashrc` で重複確認する。
-   すでに含まれていればスキップ。
-3. 含まれていなければ以下を追記する：
+1. Run `wsl -- test -f ~/.bashrc && echo exists` to check whether `~/.bashrc` exists.
+2. Run `wsl -- grep -q "ZELLIJ" ~/.bashrc` to check for duplicates.
+   If already present, skip.
+3. If not present, append the following:
 
    ```bash
    # Auto-start Zellij
@@ -57,20 +84,20 @@ PowerShell および WSL 環境 (bash / zsh) の起動時に Zellij ターミナ
    fi
    ```
 
-   追記コマンド:
+   Append command:
    ```
    wsl -- bash -c 'printf "\n# Auto-start Zellij\nif [[ -z \"\$ZELLIJ\" ]]; then\n    zellij\nfi\n" >> ~/.bashrc'
    ```
 
 ---
 
-### 4. WSL zsh プロファイルの設定（zsh が存在する場合のみ）
+### 4. Configure WSL zsh profile (only if zsh is installed)
 
-1. `wsl -- which zsh` で zsh の有無を確認する。存在しない場合はスキップ。
-2. `wsl -- test -f ~/.zshrc && echo exists` で `~/.zshrc` の存在を確認する。
-3. `wsl -- grep -q "ZELLIJ" ~/.zshrc` で重複確認する。
-   すでに含まれていればスキップ。
-4. 含まれていなければ以下を追記する：
+1. Run `wsl -- which zsh` to check whether zsh is available. If not found, skip.
+2. Run `wsl -- test -f ~/.zshrc && echo exists` to check whether `~/.zshrc` exists.
+3. Run `wsl -- grep -q "ZELLIJ" ~/.zshrc` to check for duplicates.
+   If already present, skip.
+4. If not present, append the following:
 
    ```zsh
    # Auto-start Zellij
@@ -79,30 +106,31 @@ PowerShell および WSL 環境 (bash / zsh) の起動時に Zellij ターミナ
    fi
    ```
 
-   追記コマンド:
+   Append command:
    ```
    wsl -- zsh -c 'printf "\n# Auto-start Zellij\nif [[ -z \"\$ZELLIJ\" ]]; then\n    zellij\nfi\n" >> ~/.zshrc'
    ```
 
 ---
 
-### 5. 結果を報告（下記「出力フォーマット」に従う）
+### 5. Report results (follow the Output Format below)
 
-## 出力フォーマット
+## Output Format
 
 ```
-## Zellij 自動起動設定
+## Zellij Auto-start Setup
 
-| 環境       | 状態                                          | プロファイルパス |
-|------------|-----------------------------------------------|------------------|
-| PowerShell | <追加完了 / 設定済み（スキップ） / スキップ>  | <$PROFILE のパス> |
-| WSL bash   | <追加完了 / 設定済み（スキップ） / スキップ>  | ~/.bashrc        |
-| WSL zsh    | <追加完了 / 設定済み（スキップ） / zsh 未インストール> | ~/.zshrc |
+| Environment        | Status                                              | Profile Path |
+|--------------------|-----------------------------------------------------|--------------|
+| PowerShell 7       | <Added / Already configured (skipped) / Skipped>   | <$PROFILE path> |
+| Windows PowerShell | <Added / Already configured (skipped) / Skipped>   | <Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1> |
+| WSL bash           | <Added / Already configured (skipped) / Skipped>   | ~/.bashrc |
+| WSL zsh            | <Added / Already configured (skipped) / zsh not installed> | ~/.zshrc |
 
-### 実行内容
-- <実際に行った操作の箇条書き>
+### Actions taken
+- <bulleted list of what was actually done>
 
-### 次のステップ
-- 各シェルを新しいセッションで開き、Zellij が自動起動することを確認してください。
-- すでに Zellij セッション内にいる場合は入れ子起動が抑制されます（`$ZELLIJ` 変数で制御）。
+### Next steps
+- Open each shell in a new session and verify that Zellij starts automatically.
+- If you are already inside a Zellij session, nested launches are suppressed via the `$ZELLIJ` variable.
 ```
