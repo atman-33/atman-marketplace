@@ -116,6 +116,11 @@ Create `.claude/project-context.json` in the project root (run
   Use `/set-openspec-path` to switch it by picking a registered project from a
   menu instead of hand-editing the absolute path.
 - `name` defaults to `path` when omitted; `summary` is optional.
+- For each project, the hook resolves an instruction file under `path`
+  (`CLAUDE.md`, or `AGENTS.md` when there is no `CLAUDE.md`) and adds its absolute
+  path as an `instructions` attribute when found. This lets Claude pick up a
+  sibling repo's own guidance even when launched from another directory; the
+  attribute is omitted when neither file exists.
 - `roleBasedDelegation: true` injects the role-based delegation criteria (see
   below).
 
@@ -125,10 +130,10 @@ This produces:
 <project-context>
   <openspec path="C:/repos/atman-marketplace/openspec" />
   <registered-projects>
-    <project name="atman-marketplace" path="C:/repos/atman-marketplace">
+    <project name="atman-marketplace" path="C:/repos/atman-marketplace" instructions="C:/repos/atman-marketplace/CLAUDE.md">
       <summary>Claude Code plugin marketplace</summary>
     </project>
-    <project name="agent-harness" path="C:/repos/agent-harness" />
+    <project name="agent-harness" path="C:/repos/agent-harness" instructions="C:/repos/agent-harness/CLAUDE.md" />
   </registered-projects>
 </project-context>
 ```
