@@ -154,6 +154,29 @@ ask for it — consistent with the hook's "never nag an unconfigured project"
 behavior. Enable it where you actually run multi-step development work (e.g. at
 `user` scope, or per repo).
 
+### PreToolUse hook: target-repo path-scoped rule injection
+
+Claude Code only loads memory/rules from the current working directory hierarchy
+(upward) plus cwd subdirectories. When you launch the harness in one repo and use
+it to develop a **sibling** repo, that sibling's `.claude/rules/*.md` are never
+loaded — they live outside the cwd tree. A second `node`-based hook
+([`hooks/scripts/inject-target-rules.mjs`](hooks/scripts/inject-target-rules.mjs))
+closes that gap by reproducing the native path-scoped rule behavior for sibling
+repos.
+
+On every `Read`, `Edit`, or `Write`, the hook resolves the touched file against
+the registered projects in `.claude/project-context.json`. When the file lives
+under a sibling project root (never the cwd itself — those rules load natively),
+it scans that repo's `.claude/rules/*.md`, honors each rule's `paths:` front
+matter (glob-matched against the touched file; rules without `paths` always
+apply), and injects the matching rules as a `<target-project-rules>` block via
+`additionalContext`. Each rule is injected at most once per session (de-duplicated
+with a temp-dir sentinel keyed by session and rule file), so a path-scoped rule
+still injects the first time a matching file is touched, without re-injecting on
+every subsequent call. The hook is failure-tolerant and silent (injects nothing)
+for cwd-local files, unregistered paths, or repos without a `.claude/rules`
+folder.
+
 #### How install scope relates to the config
 
 Plugin files (including the hook script) live in the Claude Code plugin cache and
