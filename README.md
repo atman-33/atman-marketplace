@@ -103,6 +103,16 @@ claude plugin update <plugin-name>@atman-marketplace   # update to latest versio
 claude plugin uninstall <plugin-name>@atman-marketplace
 ```
 
+## Local Validation
+
+This repository keeps JavaScript checks dependency-free. When you change a `.mjs` file, run:
+
+```bash
+npm run check:mjs
+```
+
+That script syntax-checks every `plugins/**/*.mjs` file using Node itself. Editor diagnostics for the same files are configured via `jsconfig.json`.
+
 ## Repository Layout
 
 ```

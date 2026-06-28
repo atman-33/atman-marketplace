@@ -1,0 +1,8 @@
+{
+  "name": "atman-marketplace",
+  "private": true,
+  "scripts": {
+    "check:mjs": "node ./scripts/check-mjs.mjs",
+    "check": "npm run check:mjs"
+  }
+}

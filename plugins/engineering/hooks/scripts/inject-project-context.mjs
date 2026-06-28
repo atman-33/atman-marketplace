@@ -24,6 +24,22 @@ import { fileURLToPath } from "node:url";
 
 const CONFIG_RELATIVE_PATH = ".claude/project-context.json";
 
+/**
+ * @typedef {{
+ *   path: string,
+ *   name?: string,
+ *   summary?: string,
+ * }} RegisteredProject
+ */
+
+/**
+ * @typedef {{
+ *   openspecPath?: string,
+ *   projects?: unknown[],
+ *   roleBasedDelegation?: boolean,
+ * }} ProjectContextConfig
+ */
+
 // Delegation-criteria doc shipped alongside the hook (../role-based-model-selection.md).
 const DELEGATION_DOC_PATH = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -41,6 +57,7 @@ function readStdin() {
 }
 
 /** Escape a string for use in XML text or a double-quoted attribute. */
+/** @param {unknown} value */
 function xmlEscape(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -57,6 +74,7 @@ function xmlEscape(value) {
  * transcript and the user can confirm exactly what was injected. `systemMessage`
  * is display-only; `additionalContext` is what Claude actually receives.
  */
+/** @param {string | null} additionalContext */
 function emit(additionalContext) {
   const payload = additionalContext
     ? {
@@ -72,6 +90,7 @@ function emit(additionalContext) {
 }
 
 /** Resolve the project root from env, then the stdin payload, then cwd. */
+/** @param {string} stdinRaw */
 function resolveProjectRoot(stdinRaw) {
   if (process.env.CLAUDE_PROJECT_DIR) {
     return process.env.CLAUDE_PROJECT_DIR;
@@ -98,6 +117,7 @@ function resolveProjectRoot(stdinRaw) {
  *      so switching projects rarely requires editing the path by hand.
  * Returns "" when neither exists, so the <openspec> line is simply omitted.
  */
+/** @param {ProjectContextConfig} config @param {string} projectRoot */
 function resolveOpenspecPath(config, projectRoot) {
   const candidate =
     typeof config.openspecPath === "string" ? config.openspecPath.trim() : "";
@@ -109,7 +129,31 @@ function resolveOpenspecPath(config, projectRoot) {
   return existsSync(fallback) ? fallback : "";
 }
 
+/**
+ * @param {unknown[]} projects
+ * @returns {RegisteredProject[]}
+ */
+function getValidProjects(projects) {
+  /** @type {RegisteredProject[]} */
+  const validProjects = [];
+
+  for (const project of projects) {
+    if (
+      project &&
+      typeof project === "object" &&
+      "path" in project &&
+      typeof project.path === "string" &&
+      project.path.trim()
+    ) {
+      validProjects.push(/** @type {RegisteredProject} */ (project));
+    }
+  }
+
+  return validProjects;
+}
+
 /** Build the <project-context> XML block from the parsed config. */
+/** @param {ProjectContextConfig} config @param {string} openspecPath */
 function buildXml(config, openspecPath) {
   const lines = ["<project-context>"];
 
@@ -118,9 +162,7 @@ function buildXml(config, openspecPath) {
   }
 
   const projects = Array.isArray(config.projects) ? config.projects : [];
-  const validProjects = projects.filter(
-    (p) => p && typeof p.path === "string" && p.path.trim()
-  );
+  const validProjects = getValidProjects(projects);
 
   if (validProjects.length > 0) {
     lines.push("  <registered-projects>");
@@ -197,8 +239,7 @@ function main() {
   const resolvedOpenspec = resolveOpenspecPath(config, projectRoot);
   const hasOpenspec = resolvedOpenspec !== "";
   const hasProjects =
-    Array.isArray(config.projects) &&
-    config.projects.some((p) => p && typeof p.path === "string" && p.path.trim());
+    Array.isArray(config.projects) && getValidProjects(config.projects).length > 0;
   const wantsDelegation = config.roleBasedDelegation === true;
   if (!hasOpenspec && !hasProjects && !wantsDelegation) {
     emit(null);

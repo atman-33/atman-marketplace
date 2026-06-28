@@ -38,6 +38,43 @@ import { createHash } from "node:crypto";
 
 const CONFIG_RELATIVE_PATH = ".claude/project-context.json";
 
+/**
+ * @typedef {{
+ *   path: string,
+ *   name?: string,
+ * }} RegisteredProject
+ */
+
+/**
+ * @typedef {{
+ *   projects?: unknown[],
+ * }} ProjectContextConfig
+ */
+
+/**
+ * @typedef {{
+ *   cwd?: string,
+ *   session_id?: string,
+ *   tool_input?: {
+ *     file_path?: string,
+ *   },
+ * }} PreToolUsePayload
+ */
+
+/**
+ * @typedef {{
+ *   root: string,
+ *   name: string,
+ * }} TargetProject
+ */
+
+/**
+ * @typedef {{
+ *   rel: string,
+ *   body: string,
+ * }} InjectedRule
+ */
+
 /** Read all of stdin (the PreToolUse payload). Returns "" if none. */
 function readStdin() {
   try {
@@ -48,6 +85,7 @@ function readStdin() {
 }
 
 /** Escape a string for use in XML text or a double-quoted attribute. */
+/** @param {unknown} value */
 function xmlEscape(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -57,6 +95,7 @@ function xmlEscape(value) {
 }
 
 /** Normalise a filesystem path: forward slashes, strip trailing slashes. */
+/** @param {string} p */
 function normalizePath(p) {
   return String(p).replace(/\\/g, "/").replace(/\/+$/, "");
 }
@@ -65,6 +104,7 @@ function normalizePath(p) {
  * Resolve a project's instruction file under its root.
  * Prefers CLAUDE.md, falls back to AGENTS.md, returns "" when neither exists.
  */
+/** @param {string} root */
 function resolveInstructionsFile(root) {
   const base = normalizePath(root);
   for (const name of ["CLAUDE.md", "AGENTS.md"]) {
@@ -77,6 +117,7 @@ function resolveInstructionsFile(root) {
 }
 
 /** Resolve the project root from env, then the stdin payload, then cwd. */
+/** @param {PreToolUsePayload} payload */
 function resolveProjectRoot(payload) {
   if (process.env.CLAUDE_PROJECT_DIR) {
     return process.env.CLAUDE_PROJECT_DIR;
@@ -93,15 +134,19 @@ function resolveProjectRoot(payload) {
  * only — it does not affect the permission decision), giving a visible summary
  * of what was injected.
  */
+/** @param {string | null} additionalContext @param {string} [systemMessage] */
 function emit(additionalContext, systemMessage) {
-  const payload = additionalContext
-    ? {
-        hookSpecificOutput: {
-          hookEventName: "PreToolUse",
-          additionalContext,
-        },
-      }
-    : {};
+  /** @type {{
+   *   hookSpecificOutput?: { hookEventName: "PreToolUse", additionalContext: string },
+   *   systemMessage?: string,
+   * }} */
+  const payload = {};
+  if (additionalContext) {
+    payload.hookSpecificOutput = {
+      hookEventName: "PreToolUse",
+      additionalContext,
+    };
+  }
   if (systemMessage) {
     payload.systemMessage = systemMessage;
   }
@@ -110,6 +155,7 @@ function emit(additionalContext, systemMessage) {
 }
 
 /** True when `child` is the same path as, or nested under, `parent`. */
+/** @param {string} child @param {string} parent */
 function isUnder(child, parent) {
   const c = child.toLowerCase();
   const p = parent.toLowerCase();
@@ -120,6 +166,7 @@ function isUnder(child, parent) {
  * Convert a single glob pattern to an anchored, full-match RegExp.
  * Supports `**` (any depth, incl. slashes), `*` (single segment), `?`.
  */
+/** @param {string} glob */
 function globToRegExp(glob) {
   let re = "";
   for (let i = 0; i < glob.length; i++) {
@@ -143,6 +190,7 @@ function globToRegExp(glob) {
 }
 
 /** A repo-relative path matches a glob if either the bare or `**`/-prefixed form hits. */
+/** @param {string} relPath @param {string} glob */
 function matchesGlob(relPath, glob) {
   const clean = glob.replace(/^\.\//, "").replace(/^\/+/, "");
   try {
@@ -165,6 +213,7 @@ function matchesGlob(relPath, glob) {
  * Returns { hasFrontMatter, paths } where `paths` is an array of glob strings.
  * Supports inline (`paths: apis/*.py`) and YAML list forms. Zero-dependency.
  */
+/** @param {string} content */
 function parsePathsFrontMatter(content) {
   const m = content.match(/^﻿?---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) {
@@ -200,17 +249,20 @@ function parsePathsFrontMatter(content) {
   return { hasFrontMatter: true, paths };
 }
 
+/** @param {string} s */
 function stripQuotes(s) {
   return s.replace(/^["']/, "").replace(/["']$/, "");
 }
 
 /** Strip the front matter block so only the rule body is injected. */
+/** @param {string} content */
 function stripFrontMatter(content) {
   const m = content.match(/^﻿?---\r?\n[\s\S]*?\r?\n---\r?\n?/);
   return m ? content.slice(m[0].length) : content;
 }
 
 /** Sentinel path for a (session, rule-file) pair. */
+/** @param {string} sessionId @param {string} ruleAbsPath */
 function sentinelPath(sessionId, ruleAbsPath) {
   const key = createHash("sha1")
     .update(`${sessionId}|${ruleAbsPath}`)
@@ -218,7 +270,31 @@ function sentinelPath(sessionId, ruleAbsPath) {
   return join(tmpdir(), `claude-target-rules-${key}`);
 }
 
+/**
+ * @param {unknown[]} projects
+ * @returns {RegisteredProject[]}
+ */
+function getRegisteredProjects(projects) {
+  /** @type {RegisteredProject[]} */
+  const registeredProjects = [];
+
+  for (const project of projects) {
+    if (
+      project &&
+      typeof project === "object" &&
+      "path" in project &&
+      typeof project.path === "string" &&
+      project.path.trim()
+    ) {
+      registeredProjects.push(/** @type {RegisteredProject} */ (project));
+    }
+  }
+
+  return registeredProjects;
+}
+
 function main() {
+  /** @type {PreToolUsePayload} */
   let payload;
   try {
     payload = JSON.parse(readStdin());
@@ -257,6 +333,7 @@ function main() {
 
   // Load registered projects.
   const configPath = join(cwd, CONFIG_RELATIVE_PATH);
+  /** @type {ProjectContextConfig} */
   let config;
   try {
     config = JSON.parse(readFileSync(configPath, "utf8"));
@@ -264,12 +341,14 @@ function main() {
     emit(null);
     return;
   }
-  const projects = Array.isArray(config.projects) ? config.projects : [];
+  const projects = getRegisteredProjects(
+    Array.isArray(config.projects) ? config.projects : []
+  );
 
   // Longest-matching registered root that contains the file.
+  /** @type {TargetProject | null} */
   let target = null;
   for (const p of projects) {
-    if (!p || typeof p.path !== "string" || !p.path.trim()) continue;
     const root = normalizePath(p.path.trim());
     if (isUnder(filePath, root)) {
       if (!target || root.length > target.root.length) {
@@ -331,6 +410,7 @@ function main() {
 
   // 2. Path-scoped rules under the target's .claude/rules. Missing dir is fine.
   const rulesDir = join(target.root, ".claude", "rules");
+  /** @type {string[]} */
   let entries = [];
   try {
     entries = readdirSync(rulesDir).filter((f) => f.toLowerCase().endsWith(".md"));
@@ -338,6 +418,7 @@ function main() {
     entries = [];
   }
 
+  /** @type {InjectedRule[]} */
   const injected = [];
   for (const file of entries.sort()) {
     const ruleAbsPath = normalizePath(join(rulesDir, file));

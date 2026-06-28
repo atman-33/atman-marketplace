@@ -1,5 +1,10 @@
 # atman-marketplace
-Claude Code plugin marketplace — plain Markdown and JSON; no build step, test suite, or package manager. Content is installed into Claude Code via the `/plugin` command.
+Claude Code plugin marketplace — mostly plain Markdown and JSON, with a lightweight Node-based validation script for local checks. Content is installed into Claude Code via the `/plugin` command.
+
+## Commands
+
+- check: `npm run check`
+- check:mjs: `npm run check:mjs`
 
 ## Layout
 
@@ -17,6 +22,7 @@ plugins/<name>/skills/<skill>/SKILL.md # Agent skill entry point
 
 - Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`)
 - Windows/WSL: hooks default to native Windows; WSL users swap in the alternative `hooks/hooks.json` documented in each plugin's README.
+- Run `npm run check:mjs` after changing any `.mjs` file; the root `package.json` is validation-only and has no dependencies.
 
 <important>
 - Always bump `plugins/<name>/.claude-plugin/plugin.json` → `version` whenever you change that plugin (commands, agents, hooks, MCP, skills, docs). Use semver: patch for fixes/docs, minor for new features, major for breaking changes. Users won't receive updates without this bump.
