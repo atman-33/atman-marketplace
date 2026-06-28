@@ -16,6 +16,12 @@ Take a deep breath, review the entire project and workspace, then create a compr
 
 Before writing anything, gather the facts the README must reflect:
 
+- **Audience & README type** — decide who reads this README and what it must primarily enable, then order the document around that intent:
+  - *Consumption-focused* — users install/run/use the thing as-is (CLI tool, app, plugin/marketplace, service, template). Lead with how to add/install and use it. **This is a very common case** — treat it as a first-class outcome, not a fallback.
+  - *Library/integration-focused* — developers import it into their own code. Lead with install plus API/usage examples.
+  - *Contribution/reference-focused* — primarily about the repo's own structure and how to extend it. Give repository layout and extension steps prominence.
+
+  Most projects are a blend; pick the dominant intent and order sections around it.
 - **Identity & purpose** — read existing `README.md` (refine, don't blindly overwrite), `package.json` / `pyproject.toml` / `Cargo.toml` / `go.mod`, and top-level docs to learn the name, one-line purpose, and description.
 - **How it runs** — detect install/build/dev/test commands, entry points, and runtime/version requirements.
 - **Features & usage** — infer the main capabilities and the primary usage flow (CLI flags, API, config options, env vars) from source and config.
@@ -26,7 +32,7 @@ Never invent commands, features, or badges you cannot verify from the project.
 
 ### 2. Write the README using this structure
 
-Follow this section order, which is distilled from high-quality open source READMEs. Omit any section that does not apply rather than padding it.
+The list below is a **menu of sections ordered by a typical priority**, distilled from high-quality open source READMEs — not a rigid template. **Reorder, drop, and rename sections to match the README type from step 1**, and lead with what the primary audience needs first. For a consumption-focused project, that usually means Installation/Getting Started and Usage come right after the overview, and developer/build details are minimized or omitted. Omit any section that does not apply rather than padding it.
 
 1. **Header** — project title. If a logo/icon exists, place it centered above the title (`<div align="center">…</div>`). A short tagline directly under the title.
 2. **Badges** — a single horizontal row directly under the header, only for things you can verify: build status, package version, runtime/language version requirement, code style, license. Use a consistent style (e.g. `?style=flat-square`). Do not fabricate badges.
@@ -40,10 +46,13 @@ Follow this section order, which is distilled from high-quality open source READ
 3. **Demo / screenshot** — if a demo GIF, screenshot, or animated preview exists in the repo, show it early. Skip if none exists; do not invent a path.
 4. **Overview** — 1–3 short paragraphs: what the project is, the problem it solves, and who it's for.
 5. **Features** — a concise bullet list of the key capabilities.
-6. **Getting Started / Installation** — the minimal install command(s) and any prerequisites (runtime version, accounts, keys).
-7. **Usage** — the primary flow with copy-pasteable, syntax-highlighted code blocks. Document CLI flags / options / config in a table when there are several. Progress from a basic example to advanced topics.
+6. **Getting Started / Installation** — how a user gets the project working. Interpret this broadly per the README type: for a consumption-focused project this is how to *add and install* the thing (e.g. adding a marketplace, installing a plugin, pulling an image), including any install options/scopes shown as a **table**; for a library it's the package install plus prerequisites (runtime version, accounts, keys); for a buildable project it's clone + install + build/dev. Cover only what the audience actually needs.
+7. **Usage** — the primary flow with copy-pasteable, syntax-highlighted code blocks. Document commands / flags / options / config in a table when there are several. Progress from a basic example to advanced topics.
 8. **Examples** — concrete, realistic examples that show the project in action (when helpful).
-9. **Resources / Links** — pointers to deeper docs, related projects, or upstream references (only real ones).
+9. **Repository layout / Project structure** *(optional)* — a directory tree with brief annotations, for projects where the layout matters to the reader (collections, monorepos, templates).
+10. **Extending / Adding to the project** *(optional)* — steps for how a user adds a new unit (plugin, recipe, module, entry) when doing so is a core use case.
+11. **Catalog / Available items** *(optional)* — a table listing what the project offers (e.g. available plugins, commands, presets) when the project is a collection.
+12. **Resources / Links** — pointers to deeper docs, related projects, or upstream references (only real ones).
 
 ### 3. Style and formatting rules
 
@@ -71,6 +80,7 @@ Follow this section order, which is distilled from high-quality open source READ
 
 - Do **not** add `License`, `Contributing`, `Code of Conduct`, `Changelog`, or `Security` sections — those belong in their own dedicated files. You may link to them if the files exist, but do not write their content into the README.
 - Do not include placeholder text, TODOs, or sections with no real content.
+- Do **not** include frequently-changing metadata (version numbers, release dates, changelogs) directly in the README. These belong in manifest files (`plugin.json`, `package.json`, etc.) or a dedicated `CHANGELOG`. Inlining them creates a maintenance burden and causes the README to go stale.
 
 ### 5. Finish
 
