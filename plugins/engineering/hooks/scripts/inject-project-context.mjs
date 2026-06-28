@@ -109,22 +109,6 @@ function resolveOpenspecPath(config, projectRoot) {
   return existsSync(fallback) ? fallback : "";
 }
 
-/**
- * Resolve a project's instruction file under its root.
- * Prefers CLAUDE.md, falls back to AGENTS.md, returns "" when neither exists.
- * Mirrors the path-normalisation style used by resolveOpenspecPath.
- */
-function resolveInstructionsFile(root) {
-  const base = root.replace(/\\/g, "/").replace(/\/+$/, "");
-  for (const name of ["CLAUDE.md", "AGENTS.md"]) {
-    const candidate = `${base}/${name}`;
-    if (existsSync(candidate)) {
-      return candidate;
-    }
-  }
-  return "";
-}
-
 /** Build the <project-context> XML block from the parsed config. */
 function buildXml(config, openspecPath) {
   const lines = ["<project-context>"];
@@ -149,11 +133,7 @@ function buildXml(config, openspecPath) {
         typeof project.summary === "string" && project.summary.trim()
           ? project.summary.trim()
           : "";
-      const instructions = resolveInstructionsFile(project.path.trim());
-      let attrs = `name="${xmlEscape(name)}" path="${xmlEscape(project.path.trim())}"`;
-      if (instructions) {
-        attrs += ` instructions="${xmlEscape(instructions)}"`;
-      }
+      const attrs = `name="${xmlEscape(name)}" path="${xmlEscape(project.path.trim())}"`;
       if (summary) {
         lines.push(`    <project ${attrs}>`);
         lines.push(`      <summary>${xmlEscape(summary)}</summary>`);

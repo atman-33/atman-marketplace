@@ -37,11 +37,13 @@ Steps:
 3. Report what was done and remind the user:
    - `roleBasedDelegation`, `openspecPath`, and `projects` are all optional; omit
      any of them and the hook skips that part. A missing file injects nothing.
-   - For each registered project, the hook also looks for an instruction file at
-     its `path` (`CLAUDE.md`, or `AGENTS.md` if there is no `CLAUDE.md`) and, when
-     found, emits its absolute path as an `instructions` attribute on the
-     `<project>` entry. This surfaces a sibling repo's own guidance when Claude is
-     launched from a different directory; nothing is added when neither file exists.
+   - A sibling repo's own guidance is injected lazily by the plugin's PreToolUse
+     hook (`inject-target-rules.mjs`): when you Read/Edit/Write a file under a
+     registered project, it injects that repo's root instruction file
+     (`CLAUDE.md`, or `AGENTS.md` if there is no `CLAUDE.md`) in full once per
+     session, plus any `.claude/rules/*.md` whose `paths:` front matter matches
+     the touched file. Nothing is injected for files under the current working
+     directory (that guidance loads natively).
    - `openspecPath` may be left empty (or pointed at a missing folder); the hook
      then auto-resolves it to the working-directory `openspec`
      (`<project-root>/openspec`). Use `/set-openspec-path` to switch it later by

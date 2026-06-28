@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * PreToolUse hook: inject a target (sibling) repository's path-scoped
- * `.claude/rules/*.md` into Claude's context just before a file is read or
- * edited, reproducing Claude Code's native path-scoped rule behaviour for repos
- * that live OUTSIDE the current working directory tree.
+ * PreToolUse hook: inject a target (sibling) repository's guidance into Claude's
+ * context just before a file is read or edited, reproducing Claude Code's native
+ * memory/rule loading for repos that live OUTSIDE the current working directory
+ * tree. Two things are injected:
+ *   1. The repo's root instruction file (CLAUDE.md preferred, else AGENTS.md),
+ *      full text, once per session per repo.
+ *   2. The path-scoped `.claude/rules/*.md` whose `paths:` front matter matches
+ *      the touched file.
  *
  * Why this exists: Claude Code only loads memory/rules from the cwd hierarchy
  * (upward) plus cwd subdirectories (lazily). When the harness is launched in one
- * repo and used to develop a sibling repo, that sibling's `.claude/rules` are
- * never loaded. This hook bridges that gap: on Read/Edit/Write of a file under a
- * registered sibling project, it finds the rules whose `paths:` front matter
- * matches the touched file and injects them via `additionalContext`.
+ * repo and used to develop a sibling repo, that sibling's CLAUDE.md/AGENTS.md and
+ * `.claude/rules` are never loaded. This hook bridges that gap: on Read/Edit/Write
+ * of a file under a registered sibling project, it injects the above via
+ * `additionalContext`.
  *
  * Input (stdin JSON): `tool_name`, `tool_input.file_path`, `cwd`, `session_id`.
  * Registered projects come from `<projectRoot>/.claude/project-context.json`
@@ -55,6 +59,21 @@ function xmlEscape(value) {
 /** Normalise a filesystem path: forward slashes, strip trailing slashes. */
 function normalizePath(p) {
   return String(p).replace(/\\/g, "/").replace(/\/+$/, "");
+}
+
+/**
+ * Resolve a project's instruction file under its root.
+ * Prefers CLAUDE.md, falls back to AGENTS.md, returns "" when neither exists.
+ */
+function resolveInstructionsFile(root) {
+  const base = normalizePath(root);
+  for (const name of ["CLAUDE.md", "AGENTS.md"]) {
+    const candidate = `${base}/${name}`;
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return "";
 }
 
 /** Resolve the project root from env, then the stdin payload, then cwd. */
@@ -260,20 +279,54 @@ function main() {
     .slice(target.root.length)
     .replace(/^\/+/, "");
 
-  // Enumerate the target's rule files.
-  const rulesDir = join(target.root, ".claude", "rules");
-  let entries;
-  try {
-    entries = readdirSync(rulesDir).filter((f) => f.toLowerCase().endsWith(".md"));
-  } catch {
-    emit(null);
-    return;
-  }
-
   const sessionId =
     typeof payload.session_id === "string" && payload.session_id
       ? payload.session_id
       : "no-session";
+
+  const blocks = [];
+
+  // 1. Root instruction file (CLAUDE.md preferred, then AGENTS.md), full text,
+  //    injected at most once per (session, repo). Reproduces the native cwd
+  //    memory auto-load for a sibling repo.
+  const instructionsFile = resolveInstructionsFile(target.root);
+  if (instructionsFile) {
+    const sentinel = sentinelPath(sessionId, instructionsFile);
+    if (!existsSync(sentinel)) {
+      let content;
+      try {
+        content = readFileSync(instructionsFile, "utf8");
+      } catch {
+        content = null;
+      }
+      if (content && content.trim()) {
+        try {
+          writeFileSync(sentinel, `${new Date().toISOString()} ${relPath}\n`);
+        } catch {
+          // Non-fatal: inject once even if the sentinel can't be written.
+        }
+        const fileName = instructionsFile.slice(target.root.length).replace(/^\/+/, "");
+        blocks.push(
+          [
+            `<target-project-instructions project="${xmlEscape(target.name)}" path="${xmlEscape(fileName)}">`,
+            `  Full instructions from the target repository "${xmlEscape(target.name)}"`,
+            `  (outside the current working directory). Follow them while working there.`,
+            content.trim(),
+            "</target-project-instructions>",
+          ].join("\n")
+        );
+      }
+    }
+  }
+
+  // 2. Path-scoped rules under the target's .claude/rules. Missing dir is fine.
+  const rulesDir = join(target.root, ".claude", "rules");
+  let entries = [];
+  try {
+    entries = readdirSync(rulesDir).filter((f) => f.toLowerCase().endsWith(".md"));
+  } catch {
+    entries = [];
+  }
 
   const injected = [];
   for (const file of entries.sort()) {
@@ -306,24 +359,22 @@ function main() {
     });
   }
 
-  if (injected.length === 0) {
-    emit(null);
-    return;
+  if (injected.length > 0) {
+    const lines = [
+      `<target-project-rules project="${xmlEscape(target.name)}" root="${xmlEscape(target.root)}">`,
+      `  These path-scoped rules come from the target repository "${xmlEscape(target.name)}"`,
+      `  (outside the current working directory) and apply to ${xmlEscape(relPath)}.`,
+    ];
+    for (const r of injected) {
+      lines.push(`  <rule path="${xmlEscape(r.rel)}">`);
+      lines.push(r.body);
+      lines.push("  </rule>");
+    }
+    lines.push("</target-project-rules>");
+    blocks.push(lines.join("\n"));
   }
 
-  const lines = [
-    `<target-project-rules project="${xmlEscape(target.name)}" root="${xmlEscape(target.root)}">`,
-    `  These path-scoped rules come from the target repository "${xmlEscape(target.name)}"`,
-    `  (outside the current working directory) and apply to ${xmlEscape(relPath)}.`,
-  ];
-  for (const r of injected) {
-    lines.push(`  <rule path="${xmlEscape(r.rel)}">`);
-    lines.push(r.body);
-    lines.push("  </rule>");
-  }
-  lines.push("</target-project-rules>");
-
-  emit(lines.join("\n"));
+  emit(blocks.length > 0 ? blocks.join("\n\n") : null);
 }
 
 main();

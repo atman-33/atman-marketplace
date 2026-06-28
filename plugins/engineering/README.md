@@ -116,11 +116,10 @@ Create `.claude/project-context.json` in the project root (run
   Use `/set-openspec-path` to switch it by picking a registered project from a
   menu instead of hand-editing the absolute path.
 - `name` defaults to `path` when omitted; `summary` is optional.
-- For each project, the hook resolves an instruction file under `path`
-  (`CLAUDE.md`, or `AGENTS.md` when there is no `CLAUDE.md`) and adds its absolute
-  path as an `instructions` attribute when found. This lets Claude pick up a
-  sibling repo's own guidance even when launched from another directory; the
-  attribute is omitted when neither file exists.
+- A sibling repo's own guidance (`CLAUDE.md`/`AGENTS.md` and `.claude/rules`) is
+  injected lazily by the PreToolUse hook when you actually touch that repo's
+  files — see [PreToolUse hook](#pretooluse-hook-target-repo-guidance-injection)
+  below.
 - `roleBasedDelegation: true` injects the role-based delegation criteria (see
   below).
 
@@ -130,10 +129,10 @@ This produces:
 <project-context>
   <openspec path="C:/repos/atman-marketplace/openspec" />
   <registered-projects>
-    <project name="atman-marketplace" path="C:/repos/atman-marketplace" instructions="C:/repos/atman-marketplace/CLAUDE.md">
+    <project name="atman-marketplace" path="C:/repos/atman-marketplace">
       <summary>Claude Code plugin marketplace</summary>
     </project>
-    <project name="agent-harness" path="C:/repos/agent-harness" instructions="C:/repos/agent-harness/CLAUDE.md" />
+    <project name="agent-harness" path="C:/repos/agent-harness" />
   </registered-projects>
 </project-context>
 ```
@@ -154,28 +153,35 @@ ask for it — consistent with the hook's "never nag an unconfigured project"
 behavior. Enable it where you actually run multi-step development work (e.g. at
 `user` scope, or per repo).
 
-### PreToolUse hook: target-repo path-scoped rule injection
+### PreToolUse hook: target-repo guidance injection
 
 Claude Code only loads memory/rules from the current working directory hierarchy
 (upward) plus cwd subdirectories. When you launch the harness in one repo and use
-it to develop a **sibling** repo, that sibling's `.claude/rules/*.md` are never
-loaded — they live outside the cwd tree. A second `node`-based hook
+it to develop a **sibling** repo, that sibling's `CLAUDE.md`/`AGENTS.md` and
+`.claude/rules/*.md` are never loaded — they live outside the cwd tree. A second
+`node`-based hook
 ([`hooks/scripts/inject-target-rules.mjs`](hooks/scripts/inject-target-rules.mjs))
-closes that gap by reproducing the native path-scoped rule behavior for sibling
-repos.
+closes that gap by reproducing the native memory/rule loading for sibling repos.
 
 On every `Read`, `Edit`, or `Write`, the hook resolves the touched file against
 the registered projects in `.claude/project-context.json`. When the file lives
-under a sibling project root (never the cwd itself — those rules load natively),
-it scans that repo's `.claude/rules/*.md`, honors each rule's `paths:` front
-matter (glob-matched against the touched file; rules without `paths` always
-apply), and injects the matching rules as a `<target-project-rules>` block via
-`additionalContext`. Each rule is injected at most once per session (de-duplicated
-with a temp-dir sentinel keyed by session and rule file), so a path-scoped rule
-still injects the first time a matching file is touched, without re-injecting on
-every subsequent call. The hook is failure-tolerant and silent (injects nothing)
-for cwd-local files, unregistered paths, or repos without a `.claude/rules`
-folder.
+under a sibling project root (never the cwd itself — that guidance loads
+natively), it injects two things via `additionalContext`:
+
+1. **`<target-project-instructions>`** — the repo's root instruction file
+   (`CLAUDE.md` preferred, else `AGENTS.md`), **full text**, injected at most once
+   per session per repo. This replaces the old `instructions` path attribute on
+   `<project-context>`: instead of just pointing Claude at the file, the content is
+   loaded automatically the moment you touch the repo.
+2. **`<target-project-rules>`** — the repo's `.claude/rules/*.md` whose `paths:`
+   front matter glob-matches the touched file (rules without `paths` always
+   apply). Each rule is injected at most once per session, so a path-scoped rule
+   still injects the first time a matching file is touched, without re-injecting on
+   every subsequent call.
+
+De-duplication uses a temp-dir sentinel keyed by session and file. The hook is
+failure-tolerant and silent (injects nothing) for cwd-local files, unregistered
+paths, or repos without the relevant files.
 
 #### How install scope relates to the config
 
