@@ -41,9 +41,16 @@ Process the following **two profiles** independently.
    ```powershell
    # Auto-start Zellij
    if (-not $env:ZELLIJ) {
-       zellij options --default-shell powershell
+       $cwd = (Get-Location).Path
+       zellij options --default-shell pwsh --default-cwd $cwd
    }
    ```
+
+   > **Why `--default-cwd`?**
+   > On Windows, Zellij does not inherit the CWD from the launching shell, so new
+   > panes open in the user home directory. `--default-cwd` sets the working
+   > directory for the Zellij session directly, without altering the shell command.
+   > (`pwsh` = PowerShell 7 executable name on Windows)
 
 #### 2-B. Windows PowerShell profile
 
@@ -62,9 +69,13 @@ Process the following **two profiles** independently.
    ```powershell
    # Auto-start Zellij
    if (-not $env:ZELLIJ) {
-       zellij options --default-shell powershell
+       $cwd = (Get-Location).Path
+       zellij options --default-shell powershell --default-cwd $cwd
    }
    ```
+
+   > **Why `--default-cwd`?**
+   > Same reason as 2-A. (`powershell` = Windows PowerShell 5.x executable name)
 
 > Note: On systems where OneDrive redirects the Documents folder, `GetFolderPath("MyDocuments")` returns the OneDrive path. This is expected and correct.
 
