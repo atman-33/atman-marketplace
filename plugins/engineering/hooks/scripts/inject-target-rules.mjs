@@ -87,8 +87,13 @@ function resolveProjectRoot(payload) {
   return process.cwd();
 }
 
-/** Emit a PreToolUse result and exit 0. `null` means "inject nothing". */
-function emit(additionalContext) {
+/**
+ * Emit a PreToolUse result and exit 0. `additionalContext` null means "inject
+ * nothing". When `systemMessage` is provided it is shown to the user (display
+ * only — it does not affect the permission decision), giving a visible summary
+ * of what was injected.
+ */
+function emit(additionalContext, systemMessage) {
   const payload = additionalContext
     ? {
         hookSpecificOutput: {
@@ -97,6 +102,9 @@ function emit(additionalContext) {
         },
       }
     : {};
+  if (systemMessage) {
+    payload.systemMessage = systemMessage;
+  }
   process.stdout.write(JSON.stringify(payload));
   process.exit(0);
 }
@@ -285,6 +293,7 @@ function main() {
       : "no-session";
 
   const blocks = [];
+  let injectedInstructions = "";
 
   // 1. Root instruction file (CLAUDE.md preferred, then AGENTS.md), full text,
   //    injected at most once per (session, repo). Reproduces the native cwd
@@ -306,6 +315,7 @@ function main() {
           // Non-fatal: inject once even if the sentinel can't be written.
         }
         const fileName = instructionsFile.slice(target.root.length).replace(/^\/+/, "");
+        injectedInstructions = fileName;
         blocks.push(
           [
             `<target-project-instructions project="${xmlEscape(target.name)}" path="${xmlEscape(fileName)}">`,
@@ -374,7 +384,23 @@ function main() {
     blocks.push(lines.join("\n"));
   }
 
-  emit(blocks.length > 0 ? blocks.join("\n\n") : null);
+  if (blocks.length === 0) {
+    emit(null);
+    return;
+  }
+
+  // One-line, display-only summary so the user can see what was injected.
+  const parts = [];
+  if (injectedInstructions) {
+    parts.push(`${injectedInstructions} (full)`);
+  }
+  if (injected.length > 0) {
+    const names = injected.map((r) => r.rel.replace(/^\.claude\/rules\//, ""));
+    parts.push(`rules: ${names.join(", ")}`);
+  }
+  const summary = `🔎 target-rules: ${target.name} — ${parts.join(" + ")}`;
+
+  emit(blocks.join("\n\n"), summary);
 }
 
 main();

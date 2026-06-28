@@ -179,9 +179,13 @@ natively), it injects two things via `additionalContext`:
    still injects the first time a matching file is touched, without re-injecting on
    every subsequent call.
 
-De-duplication uses a temp-dir sentinel keyed by session and file. The hook is
-failure-tolerant and silent (injects nothing) for cwd-local files, unregistered
-paths, or repos without the relevant files.
+De-duplication uses a temp-dir sentinel keyed by session and file. Whenever it
+injects, the hook also surfaces a one-line `systemMessage` summary in the
+transcript (e.g. `🔎 target-rules: srms — CLAUDE.md (full) + rules:
+backend_repository.md`) so you can see at a glance which instruction file and
+rules were injected. The full text only goes to Claude's context, not the
+transcript. The hook is failure-tolerant and silent (injects nothing) for
+cwd-local files, unregistered paths, or repos without the relevant files.
 
 #### How install scope relates to the config
 
