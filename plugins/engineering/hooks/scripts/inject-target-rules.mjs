@@ -21,11 +21,17 @@
  * Registered projects come from `<projectRoot>/.claude/project-context.json`
  * (`projects[].path`) — the same source as inject-project-context.mjs.
  *
- * De-duplication: a per-(session_id, rule-file) sentinel under the OS temp dir
- * ensures each rule is injected at most once per session. Path-scoped rules can
- * become relevant later (when a different file is touched), so de-dup is keyed
- * per rule file, not per repo — a different rule still injects the first time it
- * matches.
+ * De-duplication: a per-(session_id, agent context, rule-file) sentinel under the
+ * OS temp dir ensures each rule is injected at most once per agent context. The
+ * "agent context" is the sub-agent's `agent_id` when present, else "main" for the
+ * top-level session. This matters because sub-agents share the parent's
+ * `session_id` AND `transcript_path` but have their own, separate context window:
+ * keying de-dup on `session_id` alone let a sub-agent's injection suppress the
+ * main session's (the instructions then never reached the main context). Keying it
+ * per agent context fixes that while still de-duping repeated reads within one
+ * context. Path-scoped rules can become relevant later (when a different file is
+ * touched), so de-dup is also keyed per rule file, not per repo — a different rule
+ * still injects the first time it matches.
  *
  * Always exits 0 and emits `{}` when there is nothing to inject. Never blocks or
  * issues a permission decision (it defers to the normal flow).
@@ -55,6 +61,7 @@ const CONFIG_RELATIVE_PATH = ".claude/project-context.json";
  * @typedef {{
  *   cwd?: string,
  *   session_id?: string,
+ *   agent_id?: string,
  *   tool_input?: {
  *     file_path?: string,
  *   },
@@ -261,11 +268,11 @@ function stripFrontMatter(content) {
   return m ? content.slice(m[0].length) : content;
 }
 
-/** Sentinel path for a (session, rule-file) pair. */
-/** @param {string} sessionId @param {string} ruleAbsPath */
-function sentinelPath(sessionId, ruleAbsPath) {
+/** Sentinel path for a (session, agent context, rule-file) triple. */
+/** @param {string} sessionId @param {string} contextId @param {string} ruleAbsPath */
+function sentinelPath(sessionId, contextId, ruleAbsPath) {
   const key = createHash("sha1")
-    .update(`${sessionId}|${ruleAbsPath}`)
+    .update(`${sessionId}|${contextId}|${ruleAbsPath}`)
     .digest("hex");
   return join(tmpdir(), `claude-target-rules-${key}`);
 }
@@ -371,6 +378,14 @@ function main() {
       ? payload.session_id
       : "no-session";
 
+  // The agent context: a sub-agent's id when present, else the main session.
+  // Sub-agents share session_id/transcript_path with the main session but keep a
+  // separate context window, so de-dup must be scoped per agent context.
+  const contextId =
+    typeof payload.agent_id === "string" && payload.agent_id
+      ? payload.agent_id
+      : "main";
+
   const blocks = [];
   let injectedInstructions = "";
 
@@ -379,7 +394,7 @@ function main() {
   //    memory auto-load for a sibling repo.
   const instructionsFile = resolveInstructionsFile(target.root);
   if (instructionsFile) {
-    const sentinel = sentinelPath(sessionId, instructionsFile);
+    const sentinel = sentinelPath(sessionId, contextId, instructionsFile);
     if (!existsSync(sentinel)) {
       let content;
       try {
@@ -435,8 +450,8 @@ function main() {
       : paths.some((g) => matchesGlob(relPath, g));
     if (!applies) continue;
 
-    // De-dup per (session, rule).
-    const sentinel = sentinelPath(sessionId, ruleAbsPath);
+    // De-dup per (session, agent context, rule).
+    const sentinel = sentinelPath(sessionId, contextId, ruleAbsPath);
     if (existsSync(sentinel)) continue;
     try {
       writeFileSync(sentinel, `${new Date().toISOString()} ${relPath}\n`);
