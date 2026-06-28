@@ -97,24 +97,44 @@ Create `.claude/project-context.json` in the project root (run
 ```json
 {
   "openspecPath": "C:/repos/atman-marketplace/openspec",
+  "postToolFormatCommands": [
+    "npm run format"
+  ],
   "projects": [
     {
       "name": "atman-marketplace",
       "path": "C:/repos/atman-marketplace",
-      "summary": "Claude Code plugin marketplace"
+      "summary": "Claude Code plugin marketplace",
+      "postToolFormatCommands": [
+        "npm run format",
+        "npm run lint -- --fix"
+      ]
     },
-    { "name": "agent-harness", "path": "C:/repos/agent-harness" }
+    {
+      "name": "agent-harness",
+      "path": "C:/repos/agent-harness",
+      "postToolFormatCommands": ["npm run format"]
+    }
   ]
 }
 ```
 
-- `roleBasedDelegation`, `openspecPath`, and `projects` are all optional. Omit
-  any and the hook skips that part; a missing file injects nothing.
+- `roleBasedDelegation`, `openspecPath`, `postToolFormatCommands`, and
+  `projects` are all optional. Omit any and the relevant hook skips that part;
+  a missing file injects nothing.
 - `openspecPath` falls back to `<project-root>/openspec` when it is empty **or**
   points at a folder that does not exist, so switching projects rarely needs a
   manual path edit. If neither path exists, the `<openspec>` line is omitted.
   Use `/set-openspec-path` to switch it by picking a registered project from a
   menu instead of hand-editing the absolute path.
+- `postToolFormatCommands` can be declared either at the top level (global
+  default for all registered targets) or inside each `projects[]` entry
+  (project-specific override). The per-project value wins when both are present.
+  Commands run best-effort, sequentially, after Claude `Edit`/`Write`
+  operations for files under a registered **target** project outside the
+  current cwd. They run in that target project's root, and the hook emits a
+  `systemMessage` showing exactly which commands ran and whether each one
+  succeeded.
 - `name` defaults to `path` when omitted; `summary` is optional.
 - A sibling repo's own guidance (`CLAUDE.md`/`AGENTS.md` and `.claude/rules`) is
   injected lazily by the PreToolUse hook when you actually touch that repo's
@@ -186,6 +206,30 @@ backend_repository.md`) so you can see at a glance which instruction file and
 rules were injected. The full text only goes to Claude's context, not the
 transcript. The hook is failure-tolerant and silent (injects nothing) for
 cwd-local files, unregistered paths, or repos without the relevant files.
+
+### PostToolUse hook: target-project formatting
+
+When you launch Claude Code in one repo (for example `agent-harness`) and edit a
+registered sibling repo, that sibling repo's own Claude hook config does not run.
+The engineering plugin closes that gap with a `PostToolUse` hook
+([`hooks/scripts/post-format-project.mjs`](hooks/scripts/post-format-project.mjs))
+that reads `postToolFormatCommands` from `.claude/project-context.json`.
+
+On every `Edit` or `Write`, the hook resolves the touched file against the
+registered `projects[].path` roots. If the file belongs to a registered target
+project **outside** the current cwd tree, it runs each configured command in that
+target project's root. Per-project command lists override the top-level default.
+
+- Commands run sequentially, in order.
+- Failures are best-effort only: the hook never blocks the main Claude flow.
+- The hook emits a `systemMessage` such as `🎨 post-format: my-repo` followed by
+  `ok` / `fail` lines for each command, so you can verify exactly what ran.
+- Files under the current cwd tree are skipped intentionally. This hook is for
+  target-project formatting when you are developing outside the launcher repo.
+
+Use this for formatter or fixer commands that are safe to run repeatedly from the
+repo root, for example `npm run format`, `pnpm exec prettier --write`, or
+`cargo fmt`.
 
 #### How install scope relates to the config
 

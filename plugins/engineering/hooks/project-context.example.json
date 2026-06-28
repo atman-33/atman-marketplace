@@ -1,15 +1,25 @@
 {
   "roleBasedDelegation": true,
   "openspecPath": "C:/repos/atman-marketplace/openspec",
+  "postToolFormatCommands": [
+    "npm run format"
+  ],
   "projects": [
     {
       "name": "atman-marketplace",
       "path": "C:/repos/atman-marketplace",
-      "summary": "Claude Code plugin marketplace"
+      "summary": "Claude Code plugin marketplace",
+      "postToolFormatCommands": [
+        "npm run format",
+        "npm run lint -- --fix"
+      ]
     },
     {
       "name": "agent-harness",
-      "path": "C:/repos/agent-harness"
+      "path": "C:/repos/agent-harness",
+      "postToolFormatCommands": [
+        "npm run format"
+      ]
     }
   ]
 }
