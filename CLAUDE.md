@@ -26,6 +26,7 @@ plugins/<name>/skills/<skill>/SKILL.md # Agent skill entry point
 
 <important>
 - Always bump `plugins/<name>/.claude-plugin/plugin.json` → `version` whenever you change that plugin (commands, agents, hooks, MCP, skills, docs). Use semver: patch for fixes/docs, minor for new features, major for breaking changes. Users won't receive updates without this bump.
+- After bumping `plugin.json` → `version`, **also update the matching entry in `.claude-plugin/marketplace.json`** (`plugins[].version`) to the same value. The plugin system uses `plugin.json` for auto-update checks; `marketplace.json` is display metadata and must be kept in sync manually.
 - `marketplace.json` → `plugins[].name` must exactly match the plugin folder name AND `plugin.json` → `name`.
 - When adding a new plugin, register it in both `.claude-plugin/marketplace.json` AND create `plugins/<name>/.claude-plugin/plugin.json`.
 </important>
