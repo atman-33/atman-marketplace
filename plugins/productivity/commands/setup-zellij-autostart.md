@@ -84,21 +84,33 @@ Process the following **two profiles** independently.
 ### 3. Configure WSL bash profile
 
 1. Run `wsl -- test -f ~/.bashrc && echo exists` to check whether `~/.bashrc` exists.
-2. Run `wsl -- grep -q "ZELLIJ" ~/.bashrc` to check for duplicates.
-   If already present, skip.
-3. If not present, append the following:
+2. Run `wsl -- grep -q "Auto-start Zellij" ~/.bashrc` to check for duplicates.
+   (Match the literal comment marker `Auto-start Zellij`, **not** `ZELLIJ` — see the
+   warning below for why.) If already present, skip.
+3. If not present, append the block by piping a **PowerShell single-quoted here-string**
+   to WSL's stdin. The closing `'@` must sit at column 0:
 
-   ```bash
+   ```powershell
+   @'
+
    # Auto-start Zellij
    if [[ -z "$ZELLIJ" ]]; then
        zellij
    fi
+   '@ | wsl -- bash -c 'cat >> ~/.bashrc'
    ```
 
-   Append command:
-   ```
-   wsl -- bash -c 'printf "\n# Auto-start Zellij\nif [[ -z \"\$ZELLIJ\" ]]; then\n    zellij\nfi\n" >> ~/.bashrc'
-   ```
+   > **⚠️ Why a here-string, not `printf`?**
+   > A naive `wsl -- bash -c 'printf "...\$ZELLIJ..." >> ~/.bashrc'` passes the
+   > format string through PowerShell → wsl → bash. The `\$ZELLIJ` escaping is
+   > fragile and can be stripped, writing `if [[ -z "" ]]` instead of
+   > `if [[ -z "$ZELLIJ" ]]`. Since `[[ -z "" ]]` is **always true**, Zellij then
+   > launches unconditionally — including inside an existing session — causing
+   > runaway nested Zellij/shell spawning that makes WSL unstable.
+   > A single-quoted here-string is passed **verbatim** (no `$` expansion in
+   > PowerShell), and `cat` appends stdin as-is, so the `$ZELLIJ` guard survives.
+   > For the same reason, the dedup check in step 2 greps for `Auto-start Zellij`
+   > (always written) rather than `ZELLIJ` (lost when the guard breaks).
 
 ---
 
@@ -106,20 +118,22 @@ Process the following **two profiles** independently.
 
 1. Run `wsl -- which zsh` to check whether zsh is available. If not found, skip.
 2. Run `wsl -- test -f ~/.zshrc && echo exists` to check whether `~/.zshrc` exists.
-3. Run `wsl -- grep -q "ZELLIJ" ~/.zshrc` to check for duplicates.
-   If already present, skip.
-4. If not present, append the following:
+3. Run `wsl -- grep -q "generate-auto-start" ~/.zshrc` first. If present, zsh already
+   auto-starts Zellij via the official `zellij setup --generate-auto-start zsh` method;
+   **mark as "already configured" and skip** (do not add a second manual block).
+4. Otherwise run `wsl -- grep -q "Auto-start Zellij" ~/.zshrc` to check for the manual
+   block. If already present, skip.
+5. If neither is present, append the block via a PowerShell here-string piped to stdin
+   (same technique and rationale as bash; the closing `'@` must sit at column 0):
 
-   ```zsh
+   ```powershell
+   @'
+
    # Auto-start Zellij
    if [[ -z "$ZELLIJ" ]]; then
        zellij
    fi
-   ```
-
-   Append command:
-   ```
-   wsl -- zsh -c 'printf "\n# Auto-start Zellij\nif [[ -z \"\$ZELLIJ\" ]]; then\n    zellij\nfi\n" >> ~/.zshrc'
+   '@ | wsl -- zsh -c 'cat >> ~/.zshrc'
    ```
 
 ---
@@ -136,7 +150,7 @@ Process the following **two profiles** independently.
 | PowerShell 7       | <Added / Already configured (skipped) / Skipped>   | <$PROFILE path> |
 | Windows PowerShell | <Added / Already configured (skipped) / Skipped>   | <Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1> |
 | WSL bash           | <Added / Already configured (skipped) / Skipped>   | ~/.bashrc |
-| WSL zsh            | <Added / Already configured (skipped) / zsh not installed> | ~/.zshrc |
+| WSL zsh            | <Added / Already configured (skipped) / Already auto-starts via generate-auto-start / zsh not installed> | ~/.zshrc |
 
 ### Actions taken
 - <bulleted list of what was actually done>
