@@ -1,6 +1,5 @@
 ---
-description: Commit the current changes with a Conventional Commits message.
-disable-model-invocation: true
+description: Commit the current changes with a Conventional Commits message. Use when the user asks to commit, or when a workflow (e.g. develop-feature) reaches its commit step after implementation is verified.
 name: commit-changes
 ---
 Commit the current changes with a Conventional Commits message.
