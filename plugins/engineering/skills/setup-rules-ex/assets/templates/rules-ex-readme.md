@@ -27,7 +27,7 @@ reach sibling repos. Matching is strict and root-anchored.
 ```markdown
 ---
 paths:
-  - ../atman-marketplace/plugins/**/*.mjs
+  - ../other-repo/plugins/**/*.mjs
 ---
 Rule text injected into context when a matching file is touched.
 ```

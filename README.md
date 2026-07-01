@@ -1,22 +1,22 @@
 # atman-marketplace
 
-> A personal Claude Code marketplace by [atman-33](https://github.com/atman-33) — reusable plugins (slash commands, sub-agents, hooks, MCP servers, and agent skills) installable in one command.
+> A personal Claude Code marketplace by [atman-33](https://github.com/atman-33) — reusable plugins (skills, sub-agents, hooks, MCP servers) installable in one command.
 
 [![GitHub stars](https://img.shields.io/github/stars/atman-33/atman-marketplace.svg?style=flat-square)](https://github.com/atman-33/atman-marketplace/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/atman-33/atman-marketplace.svg?style=flat-square)](https://github.com/atman-33/atman-marketplace/issues)
 
 ## Overview
 
-atman-marketplace extends Claude Code with ready-to-use plugins that cover the most common engineering and productivity workflows. Each plugin is a self-contained bundle of slash commands, sub-agents, hooks, MCP configs, and skills — just add the marketplace once and install what you need.
+atman-marketplace extends Claude Code with ready-to-use plugins that cover the most common engineering and productivity workflows. Each plugin is a self-contained bundle of skills, sub-agents, hooks, and MCP configs — just add the marketplace once and install what you need.
 
-Plugins target both **native Windows** and **WSL** environments. Environment-agnostic assets (commands, agents, skills) work in both setups without changes. Hook variants for WSL are documented in each plugin's own README.
+Plugins target both **native Windows** and **WSL** environments. Environment-agnostic assets (agents, skills) work in both setups without changes. Hook variants for WSL are documented in each plugin's own README.
 
 ## Available Plugins
 
 | Plugin | Description | Recommended Scope |
 |--------|-------------|-------------------|
-| `engineering` | Engineering utilities: role-based sub-agents, git workflow skills, project-context commands, MCP setup. | `project` |
-| `productivity` | Productivity helpers: `/create-readme`, `/create-claude-md`, skill installer. | `user` |
+| `engineering` | Engineering utilities: role-based sub-agents, git workflow skills, project-context skills, MCP setup. | `project` |
+| `productivity` | Productivity helpers: `create-readme`, `create-claude-md`, skill installer skills. | `user` |
 | `obsidian` | Helpers for working with Obsidian notes and knowledge management. | `project` |
 | `scrum` | Helpers for scrum and agile development workflows. | — |
 | `stack-cloudflare` | Helpers for Cloudflare Workers, Pages, R2, D1, and related services. | — |
@@ -93,7 +93,7 @@ Or use the slash command form:
 | `obsidian` | `project` | `claude plugin install obsidian@atman-marketplace --scope project` |
 
 > [!TIP]
-> Install `productivity` at `user` scope first — it ships `/install-recommended-skills` which bootstraps the rest of your setup in one step.
+> Install `productivity` at `user` scope first — it ships the `install-recommended-skills` skill which bootstraps the rest of your setup in one step.
 
 ## Managing Plugins
 
@@ -123,7 +123,6 @@ atman-marketplace/
    └─ <plugin-name>/
       ├─ .claude-plugin/
       │  └─ plugin.json         # Plugin manifest (name, version, description)
-      ├─ commands/*.md           # Slash commands (optional)
       ├─ agents/*.md             # Sub-agents (optional)
       ├─ hooks/hooks.json        # Hooks (optional)
       ├─ .mcp.json               # MCP server config (optional)
@@ -134,7 +133,7 @@ atman-marketplace/
 ## Adding a New Plugin
 
 1. Create `plugins/<plugin-name>/` and add a `.claude-plugin/plugin.json` manifest (see `plugins/scrum` as a minimal example).
-2. Add whichever asset folders you need: `commands/`, `agents/`, `hooks/`, `.mcp.json`, `skills/`.
+2. Add whichever asset folders you need: `agents/`, `hooks/`, `.mcp.json`, `skills/`.
 3. Register the plugin in `.claude-plugin/marketplace.json` under the `plugins` array (name must match `plugin.json`).
 4. Commit and push. Re-run `/plugin` in Claude Code to refresh and install.
 

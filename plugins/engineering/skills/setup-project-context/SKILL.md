@@ -60,8 +60,8 @@ Steps:
      without blocking the main flow.
    - `openspecPath` may be left empty (or pointed at a missing folder); the hook
      then auto-resolves it to the working-directory `openspec`
-     (`<project-root>/openspec`). Use `/set-openspec-path` to switch it later by
-     picking a registered project from a menu.
+     (`<project-root>/openspec`). Use the **set-openspec-path** skill to switch
+     it later by picking a registered project from a menu.
    - Set `roleBasedDelegation` to `true` to inject the engineering plugin's
      role-based delegation criteria (when/whom to delegate to the `code-explore`,
      `implementer`, `heavy-implementer`, and `test-runner` sub-agents) at session

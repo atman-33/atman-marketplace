@@ -1,6 +1,6 @@
 ---
 name: create-readme
-description: Create a comprehensive, well-structured README.md for the current project.
+description: Create a comprehensive, well-structured README.md for the current project. Use when the user wants to create, write, or refine a project's README.
 allowed-tools: Read Write Glob Grep Bash(ls *) Bash(cat *) Bash(git remote *) Bash(git log *)
 ---
 

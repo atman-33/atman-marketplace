@@ -1,6 +1,6 @@
 ---
 name: setup-zellij-autostart
-description: Configure PowerShell, WSL bash, and WSL zsh profiles to automatically launch Zellij on startup.
+description: Configure PowerShell, WSL bash, and WSL zsh profiles to automatically launch Zellij on startup. Use when the user wants to set up Zellij to launch automatically in their shells.
 allowed-tools: PowerShell Bash Read Write Edit
 ---
 

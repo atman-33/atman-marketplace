@@ -1,6 +1,6 @@
 ---
 name: create-claude-md
-description: Generate or refine a concise, effective CLAUDE.md for the current project following official best-practice guidelines.
+description: Generate or refine a concise, effective CLAUDE.md for the current project following official best-practice guidelines. Use when the user wants to create, write, or update a project's CLAUDE.md.
 allowed-tools: Read Write Glob Bash(ls *) Bash(cat *) Bash(git log *) Bash(git remote *)
 ---
 
