@@ -49,7 +49,7 @@ git diff "$TargetBranch...HEAD" --stat
 git log "$TargetBranch..HEAD" --oneline
 git diff "$TargetBranch...HEAD" --name-status
 
-python "$HarnessRoot\.github\skills\create-pull-request\scripts\analyze_changes.py" "$TargetBranch" --output "$AnalysisFile"
+node "$HarnessRoot\.github\skills\create-pull-request\scripts\analyze_changes.mjs" "$TargetBranch" --output "$AnalysisFile"
 ```
 
 Use the analysis JSON as the source of truth for diff stats, category summaries, commit themes, and issue references.
@@ -83,7 +83,7 @@ PowerShell example:
 ```powershell
 $TemplateFile = "$HarnessRoot\.github\skills\create-pull-request\assets\templates\pr-template-feature-ja.md"
 
-python "$HarnessRoot\.github\skills\create-pull-request\scripts\generate_pr_body.py" `
+node "$HarnessRoot\.github\skills\create-pull-request\scripts\generate_pr_body.mjs" `
   "$TemplateFile" `
   "$AnalysisFile" `
   "$PrBodyFile" `
@@ -104,7 +104,7 @@ If classification confidence is low, prefer diff stats and top-level directories
 Run the cross-platform checker before presenting or creating the PR:
 
 ```powershell
-python "$HarnessRoot\.github\skills\create-pull-request\scripts\quality_checks.py" "$TargetBranch"
+node "$HarnessRoot\.github\skills\create-pull-request\scripts\quality_checks.mjs" "$TargetBranch"
 ```
 
 The checker reports:

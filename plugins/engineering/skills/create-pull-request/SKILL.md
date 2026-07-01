@@ -1,7 +1,7 @@
 ---
 name: create-pull-request
 description: Analyzes git changes, drafts localized PR titles and bodies, and assists with creating or updating GitHub pull requests for the active agent-harness project repository. Use when working from agent-harness and the user wants to create a PR, review branch changes, draft or update a PR description, or check whether a branch is ready for review.
-compatibility: Requires git, GitHub CLI, and Python. PowerShell examples assume Windows.
+compatibility: Requires Node 18.3+, git, and GitHub CLI. PowerShell examples assume Windows.
 ---
 
 # Create Pull Request
@@ -20,9 +20,9 @@ Creates reviewer-friendly PR drafts for a repository selected from the active ag
 
 1. Resolve the target repository path from the active context.
 2. Use `Push-Location` / `Pop-Location` or an equivalent directory stack when switching into the target repository.
-3. Run `scripts/analyze_changes.py` from the target repository to produce the analysis JSON.
-4. Choose the PR template from `assets/templates/` based on branch intent, then run `scripts/generate_pr_body.py`.
-5. Run `scripts/quality_checks.py` before presenting or creating the PR.
+3. Run `scripts/analyze_changes.mjs` from the target repository to produce the analysis JSON.
+4. Choose the PR template from `assets/templates/` based on branch intent, then run `scripts/generate_pr_body.mjs`.
+5. Run `scripts/quality_checks.mjs` before presenting or creating the PR.
 6. Present the draft and warnings to the user, or create or update the PR immediately if the user explicitly asked for that fast path.
 
 ## Guardrails
