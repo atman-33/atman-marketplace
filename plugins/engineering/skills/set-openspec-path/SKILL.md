@@ -12,7 +12,7 @@ the absolute path with a menu choice.
 Steps:
 
 1. Read `.claude/project-context.json` from the current project root.
-   - If the file does not exist, tell the user to run `/setup-project-context`
+   - If the file does not exist, tell the user to run `setup-project-context`
      first and stop.
    - If it cannot be parsed as JSON, show the parse error and stop.
 

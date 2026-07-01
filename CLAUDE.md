@@ -11,7 +11,6 @@ Claude Code plugin marketplace — mostly plain Markdown and JSON, with a lightw
 ```
 .claude-plugin/marketplace.json        # Marketplace manifest — lists every plugin
 plugins/<name>/.claude-plugin/plugin.json  # Plugin manifest (name, version, description)
-plugins/<name>/commands/*.md           # Slash commands (LEGACY — do not add new ones; see "Commands vs Skills Policy")
 plugins/<name>/agents/*.md             # Sub-agent definitions
 plugins/<name>/hooks/hooks.json        # Shell hooks (Windows native by default)
 plugins/<name>/.mcp.json               # MCP server configuration
@@ -20,18 +19,15 @@ plugins/<name>/skills/<skill>/SKILL.md # Agent skill entry point
 
 ## Commands vs Skills Policy
 
-New slash commands (`plugins/<name>/commands/*.md`) are **not created** in this
-marketplace anymore. A skill with `disable-model-invocation: true` reproduces
-command behavior exactly — the `description` is never injected into context
-and the body only loads when the user explicitly types the skill name — while
-also allowing bundled reference files in the skill folder. For any new
-user-invocable, explicit-only functionality, author a skill instead; see
-`.claude/rules/skill-authoring.md`.
-
-Existing files under `plugins/*/commands/` are legacy. They keep working and
-may be edited in place, but are not a template for new work — see
-`.claude/rules/command-authoring.md`. Migrating them to skills is tracked as
-separate follow-up work.
+This marketplace uses skills exclusively — `plugins/<name>/commands/*.md` is no
+longer used anywhere; every former command has been migrated to a
+`plugins/<name>/skills/<skill>/SKILL.md`. A skill with
+`disable-model-invocation: true` reproduces command behavior exactly — the
+`description` is never injected into context and the body only loads when the
+user explicitly types the skill name — while also allowing bundled reference
+files in the skill folder. Author all new user-invocable, explicit-only
+functionality as a skill; see `.claude/rules/skill-authoring.md`. Do not
+recreate a `plugins/*/commands/` directory.
 
 ## Workflow
 

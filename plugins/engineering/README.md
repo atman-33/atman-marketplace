@@ -6,7 +6,19 @@ Engineering utilities and helpers for software development tasks.
 
 ### Skills
 
-- `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release`
+- `capture-rule`, `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release` — day-to-day git/PR workflow helpers.
+- `develop-feature` — implement a feature/fix end-to-end (branch → TDD → simplify → verify → commit → PR).
+- `install-recommended-skills` — install the mattpocock/skills engineering set.
+- `setup-openspec` — install the OpenSpec CLI and run `openspec init --tools claude`.
+- `setup-project-context` — scaffold or show `.claude/project-context.json` (see below).
+- `set-openspec-path` — switch `openspecPath` by picking a registered project from a menu (see below).
+- `setup-all` — run all of the setup skills above in sequence.
+- `setup-rules-ex` — scaffold the `rules-ex` extended-rules infrastructure (see below).
+
+`develop-feature`, `install-recommended-skills`, `setup-openspec`,
+`setup-project-context`, `set-openspec-path`, `setup-all`, and `setup-rules-ex`
+are explicit-invocation only (`disable-model-invocation: true`) — type the
+skill name to run them.
 
 ### Sub-agents
 
@@ -23,13 +35,6 @@ agent's frontmatter:
 
 The main session decides when to delegate. To make those criteria available to
 Claude automatically, enable delegation-criteria injection (below).
-
-### Commands
-
-- `/install-recommended-skills` — install the mattpocock/skills engineering set.
-- `/setup-openspec` — install the OpenSpec CLI and run `openspec init --tools claude`.
-- `/setup-project-context` — scaffold or show `.claude/project-context.json` (see below).
-- `/set-openspec-path` — switch `openspecPath` by picking a registered project from a menu (see below).
 
 ### MCP servers
 
@@ -90,8 +95,8 @@ injected. (A missing config still shows nothing.)
 
 #### Configuration
 
-Create `.claude/project-context.json` in the project root (run
-`/setup-project-context` to scaffold it, or copy
+Create `.claude/project-context.json` in the project root (run the
+`setup-project-context` skill to scaffold it, or copy
 [`hooks/project-context.example.json`](hooks/project-context.example.json)):
 
 ```json
@@ -125,8 +130,8 @@ Create `.claude/project-context.json` in the project root (run
 - `openspecPath` falls back to `<project-root>/openspec` when it is empty **or**
   points at a folder that does not exist, so switching projects rarely needs a
   manual path edit. If neither path exists, the `<openspec>` line is omitted.
-  Use `/set-openspec-path` to switch it by picking a registered project from a
-  menu instead of hand-editing the absolute path.
+  Use the `set-openspec-path` skill to switch it by picking a registered
+  project from a menu instead of hand-editing the absolute path.
 - `postToolFormatCommands` can be declared either at the top level (global
   default for all registered targets) or inside each `projects[]` entry
   (project-specific override). The per-project value wins when both are present.
@@ -249,4 +254,4 @@ match the environment you launch from (or keep separate configs).
 
 #### Requirements
 
-- Node.js on `PATH` (already required by `/setup-openspec`).
+- Node.js on `PATH` (already required by the `setup-openspec` skill).

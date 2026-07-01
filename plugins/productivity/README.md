@@ -10,11 +10,8 @@ Install this plugin globally so it's available across all your projects:
 /plugin install productivity --scope user
 ```
 
-Then install the recommended skills:
-
-```
-/install-recommended-skills
-```
+Then install the recommended skills by typing the `install-recommended-skills`
+skill name.
 
 ## Plugin update notifications
 

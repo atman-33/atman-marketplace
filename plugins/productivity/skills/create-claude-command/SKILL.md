@@ -1,14 +1,12 @@
 ---
-description: Use ONLY when maintaining an EXISTING legacy slash command under plugins/*/commands/. For new user-invocable functionality, author a skill with disable-model-invocation: true instead — see
-  .claude/rules/skill-authoring.md and .claude/rules/command-authoring.md.
+description: Use when building or improving a Claude Code slash command in a project's own `.claude/commands/`: $ARGUMENTS handling, file/bash injection, agent invocation, multi-agent orchestration, or command naming.
 name: create-claude-command
 ---
-# Claude Code Commands (Legacy)
+# Claude Code Commands
 
-> New slash commands are no longer created in this marketplace. This skill
-> is retained only for editing pre-existing files under `plugins/*/commands/`.
-> For anything new, author a skill with `disable-model-invocation: true`
-> instead.
+> Within atman-marketplace itself, author a skill with `disable-model-invocation:
+> true` instead of a new plugin command — see `.claude/rules/skill-authoring.md`.
+> This skill is for authoring `.claude/commands/` in any other project.
 
 ## Quick Reference
 

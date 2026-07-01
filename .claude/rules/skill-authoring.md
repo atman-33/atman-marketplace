@@ -21,9 +21,9 @@ See `.claude/skills/writing-great-skills/SKILL.md` for the full authoring refere
 
 ## Skills replace commands
 
-This marketplace does not create new `commands/*.md` files (see
-`.claude/rules/command-authoring.md`). `disable-model-invocation: true`
-makes a skill behave exactly like a slash command: the `description` is
+This marketplace has no `commands/*.md` files — every former command was
+migrated to a skill, and none should be recreated. `disable-model-invocation:
+true` makes a skill behave exactly like a slash command: the `description` is
 never injected into context on other turns, and the body only loads when
 the user explicitly types the skill name. Use this setting for any new
 functionality that should be explicit-invocation-only; leave `description`
