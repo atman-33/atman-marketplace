@@ -2,7 +2,12 @@
 paths:
   - "plugins/*/commands/**"
 ---
-# Command Authoring Rules
+# Command Authoring Rules (Legacy — do not create new commands)
+
+New command files are not created in this marketplace. If you are about to
+create a new file under `plugins/*/commands/`, stop — author a skill instead
+with `disable-model-invocation: true` (see `.claude/rules/skill-authoring.md`).
+This file only documents how to maintain the commands that already exist.
 
 Command files in `commands/` become slash commands (filename → `/command-name`). Required frontmatter:
 

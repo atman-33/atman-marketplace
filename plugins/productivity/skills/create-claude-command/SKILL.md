@@ -1,8 +1,14 @@
 ---
-description: Use when building or improving a Claude Code slash command: $ARGUMENTS handling, file/bash injection, agent invocation, multi-agent orchestration, or command naming.
+description: Use ONLY when maintaining an EXISTING legacy slash command under plugins/*/commands/. For new user-invocable functionality, author a skill with disable-model-invocation: true instead — see
+  .claude/rules/skill-authoring.md and .claude/rules/command-authoring.md.
 name: create-claude-command
 ---
-# Claude Code Commands
+# Claude Code Commands (Legacy)
+
+> New slash commands are no longer created in this marketplace. This skill
+> is retained only for editing pre-existing files under `plugins/*/commands/`.
+> For anything new, author a skill with `disable-model-invocation: true`
+> instead.
 
 ## Quick Reference
 
