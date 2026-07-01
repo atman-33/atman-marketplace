@@ -11,12 +11,23 @@ Claude Code plugin marketplace — mostly plain Markdown and JSON, with a lightw
 ```
 .claude-plugin/marketplace.json        # Marketplace manifest — lists every plugin
 plugins/<name>/.claude-plugin/plugin.json  # Plugin manifest (name, version, description)
-plugins/<name>/commands/*.md           # Slash commands (filename → /command-name)
 plugins/<name>/agents/*.md             # Sub-agent definitions
 plugins/<name>/hooks/hooks.json        # Shell hooks (Windows native by default)
 plugins/<name>/.mcp.json               # MCP server configuration
 plugins/<name>/skills/<skill>/SKILL.md # Agent skill entry point
 ```
+
+## Commands vs Skills Policy
+
+This marketplace uses skills exclusively — `plugins/<name>/commands/*.md` is no
+longer used anywhere; every former command has been migrated to a
+`plugins/<name>/skills/<skill>/SKILL.md`. A skill with
+`disable-model-invocation: true` reproduces command behavior exactly — the
+`description` is never injected into context and the body only loads when the
+user explicitly types the skill name — while also allowing bundled reference
+files in the skill folder. Author all new user-invocable, explicit-only
+functionality as a skill; see `.claude/rules/skill-authoring.md`. Do not
+recreate a `plugins/*/commands/` directory.
 
 ## Workflow
 

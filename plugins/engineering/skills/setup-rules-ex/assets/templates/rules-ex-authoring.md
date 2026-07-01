@@ -16,9 +16,9 @@ Follow this format when creating or editing a rule here:
 - **`paths:` is REQUIRED.** A rule with no `paths:` front matter is skipped (a
   cross-cutting rule must declare its scope, or it would fire on every file). The
   folder's `README.md` has no `paths:` precisely so it is ignored.
-- **Globs are workspace-relative (cwd = agent-harness).** Use `..` to reach sibling
-  repos, e.g. `../atman-marketplace/plugins/**/*.mjs`. A bare `src/**` would target
-  agent-harness itself.
+- **Globs are workspace-relative (cwd = this project's root).** Use `..` to reach
+  sibling repos, e.g. `../other-repo/plugins/**/*.mjs`. A bare `src/**` would
+  target this repo itself.
 - **Matching is strict and root-anchored** — full match from the workspace root, no
   implicit leading `**/` prefix. Use `**` for any depth: `../repo/**/*.ts`. `*`
   matches a single path segment; `?` a single character.
@@ -29,7 +29,7 @@ Follow this format when creating or editing a rule here:
 ```markdown
 ---
 paths:
-  - ../atman-marketplace/plugins/**/*.mjs
+  - ../other-repo/plugins/**/*.mjs
 ---
-In atman-marketplace .mjs hook scripts: zero dependencies, Node built-ins only.
+In other-repo .mjs hook scripts: zero dependencies, Node built-ins only.
 ```

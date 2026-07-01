@@ -1,8 +1,12 @@
 ---
-description: Use when building or improving a Claude Code slash command: $ARGUMENTS handling, file/bash injection, agent invocation, multi-agent orchestration, or command naming.
+description: Use when building or improving a Claude Code slash command in a project's own `.claude/commands/`: $ARGUMENTS handling, file/bash injection, agent invocation, multi-agent orchestration, or command naming.
 name: create-claude-command
 ---
 # Claude Code Commands
+
+> Within atman-marketplace itself, author a skill with `disable-model-invocation:
+> true` instead of a new plugin command — see `.claude/rules/skill-authoring.md`.
+> This skill is for authoring `.claude/commands/` in any other project.
 
 ## Quick Reference
 

@@ -4,13 +4,13 @@
     "name": "atman-33",
     "url": "https://github.com/atman-33/atman-marketplace"
   },
-  "description": "Personal Claude Code marketplace collecting reusable plugins (commands, agents, hooks, MCP, skills) for Windows and WSL development environments.",
+  "description": "Personal Claude Code marketplace collecting reusable plugins (skills, agents, hooks, MCP) for Windows and WSL development environments.",
   "plugins": [
     {
       "name": "engineering",
       "source": "./plugins/engineering",
       "description": "Engineering utilities and helpers for software development tasks.",
-      "version": "0.14.0",
+      "version": "0.15.1",
       "author": {
         "name": "atman-33",
         "url": "https://github.com/atman-33"
@@ -40,7 +40,7 @@
       "name": "productivity",
       "source": "./plugins/productivity",
       "description": "Productivity helpers for administrative and daily tasks.",
-      "version": "0.8.1",
+      "version": "0.9.0",
       "author": {
         "name": "atman-33",
         "url": "https://github.com/atman-33"

@@ -2,6 +2,7 @@
 name: develop-feature
 description: Implement a feature or fix end-to-end from spec to PR — reuse or create a feature branch, implement with TDD, simplify, self-verify, commit, request user verification, then open a PR to main.
 disable-model-invocation: true
+argument-hint: The feature or fix spec to implement (optional — falls back to conversation context).
 allowed-tools: Skill Read Write Edit Grep Glob Bash AskUserQuestion
 ---
 
