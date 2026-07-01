@@ -32,6 +32,13 @@ pasted context. The agent reads what it needs in its own context. If you wrote a
 Plan file, annotate each implementation step with its owner
 (`main` / `implementer` / `heavy-implementer`) and pass the step references.
 
+If the task matches an existing skill's process (e.g. `tdd`, `verify`,
+`simplify`), delegate to `heavy-implementer` and name the skill — it has the
+`Skill` tool and will invoke the skill directly rather than you re-explaining
+the process. It also has the `Agent` tool and may nest-delegate verbose
+sub-tasks (test runs, sub-investigations) to `test-runner`/`code-explore` on
+its own; you don't need to chain those separately.
+
 ## Report contract (expected back from agents)
 
 Agents return **only**: the list of changed files, the key decisions/trade-offs,
