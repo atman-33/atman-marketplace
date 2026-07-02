@@ -2,7 +2,7 @@
 name: implementer
 description: Implement changes whose specification is already settled. Use for mechanical or well-scoped edits where the approach is decided and little trial-and-error is expected. Can batch several small related tasks in one run.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, mcp__serena__initial_instructions, mcp__serena__activate_project, mcp__serena__find_symbol, mcp__serena__get_symbols_overview, mcp__serena__replace_symbol_body, mcp__serena__insert_before_symbol, mcp__serena__insert_after_symbol, mcp__serena__rename_symbol, mcp__serena__safe_delete_symbol, mcp__serena__replace_in_files, mcp__serena__replace_content
+tools: Read, Grep, Glob, Edit, Write, mcp__serena
 ---
 
 You are an implementer for work whose design is already decided. You apply the
