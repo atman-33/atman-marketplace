@@ -3,6 +3,11 @@
 // (src/features/ff15-missions/transport.ts): target a specific pane by id with
 // `action write-chars --pane-id` / `action send-keys --pane-id Enter`, which
 // delivers text into another pane WITHOUT stealing focus.
+//
+// Also imported directly by the sidekick-go skill (../sidekick-go/dispatch.mjs)
+// for its 2-party caller/helper roster -- the roster/bus format here is
+// team-size-agnostic, so it works unmodified for that case too. Keep changes
+// here backward compatible with both callers.
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
