@@ -7,7 +7,7 @@ Engineering utilities and helpers for software development tasks.
 ### Skills
 
 - `capture-rule`, `commit-changes`, `create-feature-branch`, `create-pull-request`, `prepare-release` — day-to-day git/PR workflow helpers.
-- `develop-feature` — implement a feature/fix end-to-end (branch → TDD → simplify → verify → commit → PR).
+- `develop-small-feature` — implement a small, well-scoped feature/fix end-to-end (branch → TDD → static checks → user verification → commit → PR).
 - `install-recommended-skills` — install the mattpocock/skills engineering set.
 - `setup-openspec` — install the OpenSpec CLI and run `openspec init --tools claude`.
 - `setup-project-context` — scaffold or show `.claude/project-context.json` (see below).
@@ -15,7 +15,7 @@ Engineering utilities and helpers for software development tasks.
 - `setup-all` — run all of the setup skills above in sequence.
 - `setup-rules-ex` — scaffold the `rules-ex` extended-rules infrastructure (see below).
 
-`develop-feature`, `install-recommended-skills`, `setup-openspec`,
+`develop-small-feature`, `install-recommended-skills`, `setup-openspec`,
 `setup-project-context`, `set-openspec-path`, `setup-all`, and `setup-rules-ex`
 are explicit-invocation only (`disable-model-invocation: true`) — type the
 skill name to run them.

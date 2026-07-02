@@ -33,11 +33,18 @@ Plan file, annotate each implementation step with its owner
 (`main` / `implementer` / `heavy-implementer`) and pass the step references.
 
 If the task matches an existing skill's process (e.g. `tdd`, `verify`,
-`simplify`), delegate to `heavy-implementer` and name the skill — it has the
-`Skill` tool and will invoke the skill directly rather than you re-explaining
-the process. It also has the `Agent` tool and may nest-delegate verbose
-sub-tasks (test runs, sub-investigations) to `test-runner`/`code-explore` on
-its own; you don't need to chain those separately.
+`simplify`), which agent drives it follows the same size criteria above —
+`implementer` has no `Skill`/`Bash` tools, so it cannot run a skill's process
+loop itself:
+
+- **Settled/small work:** invoke the skill yourself from the main session and
+  delegate only the concrete edits to `implementer` in small, focused
+  batches; the main session runs tests/checks between rounds.
+- **Large/uncertain work:** hand `heavy-implementer` the spec and name the
+  skill — it has `Skill`/`Bash`/`Agent` and will invoke and drive the process
+  directly end to end. It may also nest-delegate verbose sub-tasks (test
+  runs, sub-investigations) to `test-runner`/`code-explore` on its own; you
+  don't need to chain those separately.
 
 ## Report contract (expected back from agents)
 
